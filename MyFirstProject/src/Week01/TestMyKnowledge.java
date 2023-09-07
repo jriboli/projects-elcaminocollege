@@ -9,6 +9,10 @@ public class TestMyKnowledge {
 		
 		boolean testBoolean;
 		//System.out.print(testBoolean);
+		
+		int testMyInt = 0;
+		
+		System.out.println("Testing");
 	}
 
 }

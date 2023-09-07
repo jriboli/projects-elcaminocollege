@@ -31,7 +31,7 @@ public class Week01VariablesAndOperationsLab {
 		
 
 		// 7. Print all variables to the console
-		System.out.println(String.format("There are %d available seats on flight A180", availableSeats));
+		//System.out.println(String.format("There are %d available seats on flight A180", availableSeats));
 		System.out.println(String.format("Your checkout total is %.2f", groceryTotal));
 		System.out.println(String.format("Your customer's middle initial is %s", middleInitial));
 		System.out.println(String.format("Is it hot outside? - %s", isHotOutside));
@@ -41,7 +41,7 @@ public class Week01VariablesAndOperationsLab {
 
 		// 8. A customer booked 2 plane seats, 
 		//		remove 2 seats from the available seats variable
-		availableSeats = availableSeats - 2;
+		//availableSeats = availableSeats - 2;
 	
 
 		// 9. Impulse candy bar purchase, add 2.15 to the grocery total
