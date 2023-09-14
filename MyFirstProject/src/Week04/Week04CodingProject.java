@@ -11,11 +11,14 @@ public class Week04CodingProject {
         //    c. Use a loop to iterate through the array and calculate the average age. Print the result to the console.
 
         int[] ages = new int[] {3, 9, 23, 64, 2, 8, 28, 93};
+        System.out.print("1a. The first element minus last element in 'ages' is : "); 
         firstMinusLast(ages);
 
         int[] numbers = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        System.out.print("1b. The first element minus last element in 'numbers' is : "); 
         firstMinusLast(numbers);
-        System.out.println(calcAvgInteger(ages));
+        System.out.println("1c. The calculated average for 'ages' is : " + calcAvgInteger(ages));
+        System.out.println("---------------------------------");
 
         //    2. Create an array of String called names that contains the following values: “Sam”, “Tommy”, “Tim”, “Sally”, “Buck”, “Bob”.
         //      a. Use a loop to iterate through the array and calculate the average number of letters per name.
@@ -23,8 +26,9 @@ public class Week04CodingProject {
         //      b. Use a loop to iterate through the array again and concatenate all the names together, separated
         //          by spaces, and print the result to the console.
         String[] names = new String[] {"Sam", "Tommy", "Tim", "Sally", "Buck", "Bob"};
-        System.out.println(calcAvgInteger(ageSum));
-        System.out.println(concateStringArray(names));
+        System.out.println("2a. The calculated average length of 'names' : " + calcAvgStringLength(names));
+        System.out.println("2b. The concatenated list of 'names' is : " + concateStringArray(names));
+        System.out.println("---------------------------------");
 
         //    3. How do you access the last element of any array?
         /*
@@ -45,40 +49,54 @@ public class Week04CodingProject {
 
         //    6. Write a loop to iterate over the nameLengths array and calculate the sum of all the elements
         //      in the array. Print the result to the console.
-        System.out.println(nameLengths);
+        int nameLengthSum = 0;
+        for(int num : nameLengths) {
+        	nameLengthSum += num;
+        }
+        System.out.println("6. The sum length of all 'names' is : " + nameLengthSum);
+        System.out.println("---------------------------------");
 
         //    7. Write a method that takes a String, word, and an int, n, as arguments and returns the word
         //      concatenated to itself n number of times. (i.e. if I pass in “Hello” and 3, I expect the method to
         //      return “HelloHelloHello”).
-        System.out.println(concateNTimes("Hello", 3));
+        System.out.println("7. Method that repeats a String, result is : " + concateNTimes("Hello", 3));
+        System.out.println("---------------------------------");
 
         //    8. Write a method that takes two Strings, firstName and lastName, and returns a full name (the full name
         //      should be the first and the last name as a String separated by a space).
-        System.out.println(joinFirstNLast("Rocket", "Raccoon"));
+        System.out.println("8. Method that joins first and last, result is : " + joinFirstNLast("Rocket", "Raccoon"));
+        System.out.println("---------------------------------");
 
         //    9. Write a method that takes an array of int and returns true if the sum of all the ints in the array
         //      is greater than 100.
-        System.out.println(isIntSumOver100(numbers));
+        System.out.println("9. Method that sums up int array and checks if > 100, result is : " + isIntSumOver100(numbers));
+        System.out.println("---------------------------------");
 
         //    10. Write a method that takes an array of double and returns the average of all the elements in the array.
         double[] values = new double[] {98.07, 99.45, 87.40, 75};
-        System.out.println(calcAvgDouble(values));
+        System.out.println("10. Method that averages a array of double, result is : " + calcAvgDouble(values));
+        System.out.println("---------------------------------");
 
         //    11. Write a method that takes two arrays of double and returns true if the average of the elements in
         //      the first array is greater than the average of the elements in the second array.
         double[] secondValues = new double[] {101.01, 99.09, 87.08, 75.07};
-        System.out.println(isArraySumLarger(values, secondValues));
-
+        System.out.println("11. Method that compares sum of two double arrays to see if first is bigger, result is : " 
+        	+ isArraySumLarger(values, secondValues));
+        System.out.println("---------------------------------");
+        
         //    12. Write a method called willBuyDrink that takes a boolean isHotOutside, and a double moneyInPocket,
         //      and returns true if it is hot outside and if moneyInPocket is greater than 10.50.
-        System.out.println(willBuyDrink(true, 9.00));
-        System.out.println(willBuyDrink(false, 11.00));
-        System.out.println(willBuyDrink(true, 22.50));
+        System.out.println("12. Method to drink, neg moneyInPocket result is : " + willBuyDrink(true, 9.00));
+        System.out.println("12. Method to drink, neg isHotOutsdie result is : " + willBuyDrink(false, 11.00));
+        System.out.println("12. Method to drink, pos result is : " + willBuyDrink(true, 22.50));
+        System.out.println("---------------------------------");
 
         //    13. Create a method of your own that solves a problem. In comments, write what the method does and why
         //      you created it.
-        System.out.println(String.format("You dog is %s years old.", calcDogAge(7)));
+        System.out.println(String.format("13. Your dog is %s years old.", calcDogAge(7)));
+        System.out.println("---------------------------------");
     }
+    
     public static int calcDogAge(int age) {
         int dogAge = 0;
         for(int i = 1; i <= age; i++) {
@@ -128,7 +146,7 @@ public class Week04CodingProject {
     }
 
     public static void firstMinusLast(int[] arr) {
-        System.out.println(ages[ages.length - 1] - ages[0]);
+        System.out.println(arr[arr.length - 1] - arr[0]);
     }
 
     public static int calcAvgInteger(int[] arr){
