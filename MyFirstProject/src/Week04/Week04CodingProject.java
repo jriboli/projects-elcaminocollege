@@ -2,7 +2,7 @@ package Week04;
 
 public class Week04CodingProject {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         //    1. Create an array of int called ages that contains the following values: 3, 9, 23, 64, 2, 8, 28, 93.
         //    a. Programmatically subtract the value of the first element in the array from the value in the last
         //          element of the array (i.e. do not use ages[7] in your code). Print the result to the console.
@@ -109,14 +109,18 @@ public class Week04CodingProject {
     }
 
     public static boolean willBuyDrink(boolean isHotOutside, double moneyInPocket) {
+    	// Checking it is hot outside and we have enough money to buy a drink
         if(isHotOutside && moneyInPocket > 10.50)
             return true;
+        // Else no drink for us
         return false;
     }
 
     public static boolean isArraySumLarger(double[] arr, double[]arr2) {
+    	// Reusing an existing method to calculate the average
         double firstSum = calcAvgDouble(arr);
         double secondSum = calcAvgDouble(arr2);
+        // Checking if arr 1 is bigger than arr 2
         if(firstSum > secondSum)
             return true;
         return false;
@@ -124,21 +128,24 @@ public class Week04CodingProject {
 
     public static boolean isIntSumOver100(int[] arr) {
         int intSum = 0;
+        // Looping over integers in arr anding value to sum
         for (int num : arr) {
             intSum += num;
         }
-
+        // Checking if sum greater than 100
         if(intSum > 100)
             return true;
         return false;
     }
 
     public static String joinFirstNLast(String firstName, String lastName) {
+    	// Concatenate String using the String.format function 
         return String.format("%s %s", firstName, lastName);
     }
 
     public static String concateNTimes(String word, int n) {
         String newWord = "";
+        // Used for loop since we know the iteration count
         for(int i = 0; i < n; i++) {
             newWord += word;
         }
@@ -151,9 +158,11 @@ public class Week04CodingProject {
 
     public static int calcAvgInteger(int[] arr){
         int intAvg = 0;
+        // For each loop adding integers to Sum
         for (int num : arr) {
             intAvg += num;
         }
+        // After getting the sum divide by array size to get average
         return intAvg /= arr.length;
     }
 
