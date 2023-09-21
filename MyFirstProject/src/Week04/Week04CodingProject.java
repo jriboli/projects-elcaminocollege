@@ -1,8 +1,11 @@
 package Week04;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Week04CodingProject {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         //    1. Create an array of int called ages that contains the following values: 3, 9, 23, 64, 2, 8, 28, 93.
         //    a. Programmatically subtract the value of the first element in the array from the value in the last
         //          element of the array (i.e. do not use ages[7] in your code). Print the result to the console.
@@ -10,10 +13,12 @@ public class Week04CodingProject {
         //          it is dynamic (works for arrays of different lengths).
         //    c. Use a loop to iterate through the array and calculate the average age. Print the result to the console.
 
+    	// Creating int array and initializing it with values
         int[] ages = new int[] {3, 9, 23, 64, 2, 8, 28, 93};
         System.out.print("1a. The first element minus last element in 'ages' is : "); 
         firstMinusLast(ages);
 
+        // Creating int array and initializing it with values
         int[] numbers = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
         System.out.print("1b. The first element minus last element in 'numbers' is : "); 
         firstMinusLast(numbers);
@@ -59,7 +64,7 @@ public class Week04CodingProject {
         //    7. Write a method that takes a String, word, and an int, n, as arguments and returns the word
         //      concatenated to itself n number of times. (i.e. if I pass in “Hello” and 3, I expect the method to
         //      return “HelloHelloHello”).
-        System.out.println("7. Method that repeats a String, result is : " + concateNTimes("Hello", 3));
+        System.out.println("7. Method that repeats a String, result is : " + concateXTimes("Hello", 3));
         System.out.println("---------------------------------");
 
         //    8. Write a method that takes two Strings, firstName and lastName, and returns a full name (the full name
@@ -95,6 +100,19 @@ public class Week04CodingProject {
         //      you created it.
         System.out.println(String.format("13. Your dog is %s years old.", calcDogAge(7)));
         System.out.println("---------------------------------");
+        
+        System.out.println("13. Is Hannah a palidrome, result is : " + isPalidrome("Hannah"));
+        System.out.println("13. Is racecar a palidrome, result is : " + isPalidrome("racecar"));
+        System.out.println("13. Is rock a palidrome, result is : " + isPalidrome("rock"));
+    }
+    
+    public static boolean isPalidrome(String str) {
+    	char[] wordLetters = str.toLowerCase().toCharArray();
+    	for(int i = 0; i < wordLetters.length; i++) {
+    		if(wordLetters[i] != wordLetters[wordLetters.length - 1 -i])
+    			return false;
+    	} 	
+    	return true;
     }
     
     public static int calcDogAge(int age) {
@@ -143,7 +161,7 @@ public class Week04CodingProject {
         return String.format("%s %s", firstName, lastName);
     }
 
-    public static String concateNTimes(String word, int n) {
+    public static String concateXTimes(String word, int n) {
         String newWord = "";
         // Used for loop since we know the iteration count
         for(int i = 0; i < n; i++) {
@@ -153,6 +171,8 @@ public class Week04CodingProject {
     }
 
     public static void firstMinusLast(int[] arr) {
+    	// We are subtracting the value in the first position from the value in the last position
+    	// and printing to console
         System.out.println(arr[arr.length - 1] - arr[0]);
     }
 
@@ -187,6 +207,6 @@ public class Week04CodingProject {
         for(String word : arr) {
             newString += word + " ";
         }
-        return newString;
+        return newString.trim();
     }
 }

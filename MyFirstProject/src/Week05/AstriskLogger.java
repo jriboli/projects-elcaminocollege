@@ -15,7 +15,7 @@ public class AstriskLogger implements Logger {
 			correctAstriskLengthStr += "*";
 		
 		System.out.println(correctAstriskLengthStr);
-		System.out.println(String.format("***Error:%s***", message));
+		System.out.println(String.format("***Error: %s***", message));
 		System.out.println(correctAstriskLengthStr);
 		
 	}

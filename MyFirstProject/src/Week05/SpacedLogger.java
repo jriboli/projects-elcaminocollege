@@ -10,7 +10,7 @@ public class SpacedLogger implements Logger {
 
 	@Override
 	public void error(String message) {		
-		System.out.println("ERROR:"+addSpaces(message));
+		System.out.println("ERROR: "+addSpaces(message));
 		
 	}
 	

@@ -7,12 +7,13 @@ public class Week05CodingProject{
 		Logger bLog = new SpacedLogger();
 		
 		testOutLog(aLog);
+		System.out.println(""); // Adding some space in between
 		testOutLog(bLog);
 		
 	}
 	
 	public static void testOutLog(Logger log) {
-		log.log("Welcome Rocket");
+		log.log("Allowing Rocket Raccoon access...");
 		log.error("Everything is going to blow!");
 	}
 }
