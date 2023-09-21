@@ -13,11 +13,11 @@ public class Week03ArraysAndMethodsLab {
 		//OR
 		int[] numbersTheLongWay = new int[6];
 		numbersTheLongWay[0] = 1;
-		numbersTheLongWay[0] = 5;
-		numbersTheLongWay[0] = 2;
-		numbersTheLongWay[0] = 8;
-		numbersTheLongWay[0] = 13;
-		numbersTheLongWay[0] = 6;
+		numbersTheLongWay[1] = 5;
+		numbersTheLongWay[2] = 2;
+		numbersTheLongWay[3] = 8;
+		numbersTheLongWay[4] = 13;
+		numbersTheLongWay[5] = 6;
 
 		
 		// 2. Print out the first element in the array

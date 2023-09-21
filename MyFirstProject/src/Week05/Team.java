@@ -31,7 +31,7 @@ public class Team {
 		}
 	}
 	
-	private String getName() {
+	public String getName() {
 		return name;
 	}
 
