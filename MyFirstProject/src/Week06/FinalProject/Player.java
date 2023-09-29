@@ -32,8 +32,27 @@ public class Player {
 		hand.add(deck.draw());
 	}
 	
+	// Added for fun
+	public void pickUp(List<Card> cards) {
+		for(Card card : cards) {
+			hand.add(card);
+		}
+	}
+	
 	public void incrementScore() {
 		score++; 
+	}
+	
+	public int handSize() {
+		return hand.size();
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getScore() {
+		return score;
 	}
 
 }
