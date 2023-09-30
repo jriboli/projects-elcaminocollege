@@ -35,7 +35,4 @@ public class Card {
 		
 		return String.valueOf(value);
 	}
-	
-	
-
 }

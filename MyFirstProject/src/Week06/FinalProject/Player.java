@@ -43,7 +43,7 @@ public class Player {
 		score++; 
 	}
 	
-	public int handSize() {
+	public int getHandSize() {
 		return hand.size();
 	}
 	

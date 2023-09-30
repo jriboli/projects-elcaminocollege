@@ -1,6 +1,6 @@
 package Week06.FinalProject;
 
-public class warSimple extends warBase implements cardGame  {
+public class warGameSimplified extends warGameBase implements CardGame  {
 	
 	@Override
 	public void play() {
@@ -38,7 +38,6 @@ public class warSimple extends warBase implements cardGame  {
 
 	@Override
 	public void displayWinner() {
-		// TODO Auto-generated method stub
 		displayScore();
 		
 		if(player1.getScore() == player2.getScore()) {
@@ -52,7 +51,6 @@ public class warSimple extends warBase implements cardGame  {
 
 	@Override
 	public void displayScore() {
-		// TODO Auto-generated method stub
 		System.out.println(String.format("%s [%s] vs [%s] %s", player1.getName(), player1.getScore(), player2.getScore(), player2.getName()));
 	}
 

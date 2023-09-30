@@ -3,7 +3,7 @@ package Week06.FinalProject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class warBase {
+public class warGameBase {
 	public Deck deck = new Deck();
 	public Player player1;
 	public Player player2;

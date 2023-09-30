@@ -1,6 +1,7 @@
 package Week06.FinalProject;
 
-public interface cardGame {
+public interface CardGame {
+	public void deal(String playerName);
 	public void play();
 	public void round();
 	public void displayScore();
