@@ -17,6 +17,10 @@ public class Card {
 	public void describe() {
 		System.out.println(decodeFaceValue() + " of " + suite);
 	}
+	
+	public String describeToString() {
+		return decodeFaceValue() + " of " + suite;
+	}
 
 	public int getValue() {
 		return value;

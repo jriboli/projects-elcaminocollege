@@ -31,9 +31,20 @@ public class Week04CodingProject {
         //      b. Use a loop to iterate through the array again and concatenate all the names together, separated
         //          by spaces, and print the result to the console.
         String[] names = new String[] {"Sam", "Tommy", "Tim", "Sally", "Buck", "Bob"};
+        String[] namesTry = {"Sam", "Tommy", "Tim", "Sally", "Buck", "Bob"};
         System.out.println("2a. The calculated average length of 'names' : " + calcAvgStringLength(names));
         System.out.println("2b. The concatenated list of 'names' is : " + concateStringArray(names));
         System.out.println("---------------------------------");
+        
+        // Question to ask in class
+        StringBuilder sb = new StringBuilder();
+        sb.append("Pamela");
+        sb.append("Jill");
+        sb.append("Justin");
+        
+        String testA = sb.toString();
+        // String testB = sb; // Can't assign StringBuilder directly to String.
+        System.out.println(sb); // Then why does this work?? 
 
         //    3. How do you access the last element of any array?
         /*
@@ -203,6 +214,8 @@ public class Week04CodingProject {
     }
 
     public static String concateStringArray(String[] arr) {
+    	// This should have been a StringBuilder because the String is constantly changing
+    	// point added from Pamela
         String newString = "";
         for(String word : arr) {
             newString += word + " ";

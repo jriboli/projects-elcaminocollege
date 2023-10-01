@@ -52,6 +52,10 @@ public class Deck {
 		}
 	}
 	
+	public int getDeckSize() {
+		return cards.size();
+	}
+	
 	private boolean checkIfExists(Card c, List<Card> cards) {
 		for(Card card : cards) {
 			if(c.equals(card)) {
