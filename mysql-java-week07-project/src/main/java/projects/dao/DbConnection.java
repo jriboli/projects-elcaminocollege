@@ -24,7 +24,6 @@ public class DbConnection {
 			System.out.println("Successfully obtained a connection!");
 			return conn;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Error getting connection.");
 			e.printStackTrace();
 			throw new DbException(e);

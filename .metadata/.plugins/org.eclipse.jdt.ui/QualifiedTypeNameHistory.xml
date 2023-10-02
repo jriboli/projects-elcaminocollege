@@ -15,4 +15,6 @@
     <fullyQualifiedTypeName name="recipes.exception.DbException"/>
     <fullyQualifiedTypeName name="recipes.dao.DbConnection"/>
     <fullyQualifiedTypeName name="java.sql.Connection"/>
+    <fullyQualifiedTypeName name="projects.exception.DbException"/>
+    <fullyQualifiedTypeName name="projects.dao.DbConnection"/>
 </qualifiedTypeNameHistroy>
