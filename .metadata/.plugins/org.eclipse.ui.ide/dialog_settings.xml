@@ -28,4 +28,7 @@
 			<item value="org.eclipse.m2e"/>
 		</list>
 	</section>
+	<section name="org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea">
+		<item key="OUTSIDE_LOCATION" value="C:\Users\Justin\Documents\GitHub\projects-elcaminocollege\mysql-java-week08-project"/>
+	</section>
 </section>
