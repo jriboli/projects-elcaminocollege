@@ -1,6 +1,16 @@
-package projects;
+package projects.dao;
 
-public class ProjectsDao {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+import provided.util.DaoBase;
+import projects.entity.Project;
+import projects.exception.DbException;
+
+public class ProjectsDao extends DaoBase {
 	private static final String PROJECT_TABLE = "project";
 	private static final String MATERIAL_TABLE = "material";
 	private static final String STEP_TABLE = "step";
@@ -27,8 +37,7 @@ public class ProjectsDao {
 		}
 	}
 
-	public Recipe insertProject(Project project) {
-		// TODO Auto-generated method stub
+	public Project insertProject(Project project) {
 		String sql = ""
 				+ "INSERT INTO " + PROJECT_TABLE + " "
 				+ "(project_name, estimated_hours, actual_hours, difficulty, notes) "
@@ -49,7 +58,7 @@ public class ProjectsDao {
 				
 				commitTransaction(conn);
 				
-				recipe.setProjectId(projectId);
+				project.setProjectId(projectId);
 				return project;
 			} catch (Exception e) {
 				rollbackTransaction(conn);
