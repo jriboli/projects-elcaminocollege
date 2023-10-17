@@ -28,6 +28,9 @@ public class ProjectsApp {
 		new ProjectsApp().processUserSelections();
 	}
 
+	/**
+	 * Method will present the user with operations/actions, ask for user input, and then perform said action.
+	 */
 	private void processUserSelections() {
 		// Using boolean here to continually prompt use for action until exit is triggered
 		boolean done = false;
@@ -112,7 +115,16 @@ public class ProjectsApp {
 		String projectName = getStringInput("Enter the project name");
 		BigDecimal estimatedHours = getBigDecimalInput("Enter the estimated hours");
 		BigDecimal actualHours = getBigDecimalInput("Enter the actual hours");
-		Integer	difficulty = getIntInput("Enter the poject difficulty (1-5)");
+		// Had to add some validation to the Difficulty into. Make sure value between 1 - 5
+		boolean validDifficulty = false;
+		Integer difficulty = 0;
+		while(!validDifficulty) {
+			difficulty = getIntInput("Enter the poject difficulty (1-5)");
+			validDifficulty = isDifficultyValid(difficulty);
+			if(!validDifficulty) {
+				System.out.println("Invalid difficulty level, please use 1-5. Try again.");
+			}
+		}
 		String notes = getStringInput("Enter the project notes");
 		
 		// Add details to project object
@@ -186,6 +198,13 @@ public class ProjectsApp {
 		return line.isBlank() ? null : line.trim();
 	}
 
+	private boolean isDifficultyValid(Integer difficulty) {
+		if(difficulty < 1 || difficulty > 5)
+			return false;
+		
+		return true;
+	}
+	
 	// MENU DISPLAY
 	private void printOperations() {
 		System.out.println();
@@ -202,8 +221,6 @@ public class ProjectsApp {
 		
 		operations.forEach(operation -> System.out.println("\t" + operation));
 	}
-
-	
 	
 	private boolean exitMenu() {
 		System.out.println("\nExiting the menu. TTFN!");
