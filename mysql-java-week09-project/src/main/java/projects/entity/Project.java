@@ -75,6 +75,18 @@ public class Project {
   public List<Category> getCategories() {
     return categories;
   }
+  
+  public void setMaterials(List<Material> materials) {
+    this.materials = materials;
+  }
+
+  public void setSteps(List<Step> steps) {
+    this.steps = steps;
+  }
+
+  public void setCategories(List<Category> categories) {
+    this.categories = categories;
+  }
 
   @Override
   public String toString() {

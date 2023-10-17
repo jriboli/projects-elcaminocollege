@@ -13,12 +13,13 @@ import projects.entity.Project;
 import projects.exception.DbException;
 
 
-public class DbService {
+public class ProjectService {
 	private static final String SCHEMA_FILE = "projects_schema.sql";
 	private static final String DATA_FILE = "projects_data.sql";
 
 	private ProjectsDao projectsDao = new ProjectsDao();
 
+	// CONVERT FILE TO COMMANDS
 	public void createAndPopulateTables() {
 		loadFromFile(SCHEMA_FILE);
 		loadFromFile(DATA_FILE);
@@ -90,7 +91,12 @@ public class DbService {
 		}
 	}
 
+	// OPERATIONS
 	public Project addProject(Project project) {
 		return projectsDao.insertProject(project);
+	}
+
+	public Project findAProject(String projectName) {
+		return projectsDao.findAProject(projectName);
 	}
 }
