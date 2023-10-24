@@ -79,15 +79,7 @@ public class ProjectsDao extends DaoBase {
 		}
 	}
 	
-	public Project fetchFullProjectDetails(String projectName) {
-		String sql = ""
-				+ "SELECT * FROM " + PROJECT_TABLE + " "
-				+ "WHERE project_name LIKE '%" + projectName + "%' "
-				+ "LIMIT 1";
-		
-		return getProjectAndDetails(sql).get(0);
-	}
-	
+	// FETCH METHODS 
 	public Optional<Project> fetchSingleProjectById(Integer projectId) {
 		String sql = ""
 				+ "SELECT * FROM " + PROJECT_TABLE + " "
@@ -103,7 +95,7 @@ public class ProjectsDao extends DaoBase {
 		 return getProjectAndDetails(sql);
 	}
 
-	public List<Material> findMaterialsByProjectId(Integer projectId) {
+	public List<Material> fetchMaterialsByProjectId(Integer projectId) {
 		String sql = ""
 				+ "SELECT * FROM " + MATERIAL_TABLE + " "
 				+ "WHERE project_id =" + projectId + " ";
@@ -111,7 +103,7 @@ public class ProjectsDao extends DaoBase {
 		return getMaterials(sql);
 	}
 	
-	public List<Step> findStepsByProjectId(Integer projectId) {
+	public List<Step> fetchStepsByProjectId(Integer projectId) {
 		String sql = ""
 				+ "SELECT * FROM " + STEP_TABLE + " "
 				+ "WHERE project_id =" + projectId + " ";
@@ -119,7 +111,7 @@ public class ProjectsDao extends DaoBase {
 		return getSteps(sql);		
 	}
 	
-	public List<Category> findCategoriesByProjectId(Integer projectId) {
+	public List<Category> fetchCategoriesByProjectId(Integer projectId) {
 		// Could not use simple SELECT, had to add JOIN as CATEGORY details only stored in CATEGORY TABLE, though
 		// no project_id in CATEGORY TABLE
 		String sql = ""
@@ -130,7 +122,7 @@ public class ProjectsDao extends DaoBase {
 		return getCategories(sql);
 	}
 	
-	// SELECT QUERY BY OBJECT 
+	// SELECT QUERY BY OBJECT METHODS 
 	private List<Category> getCategories(String query) {
 		// Moved this out into its own Method as I feel we will be calling these more from with different queries
 		try(Connection conn = DbConnection.getConnection()) {			
@@ -235,11 +227,14 @@ public class ProjectsDao extends DaoBase {
 							
 							if(Objects.nonNull(project)) {
 								// TO DO : Am I not closing connections ??
-								project.setMaterials(findMaterialsByProjectId(project.getProjectId()));
-								project.setSteps(findStepsByProjectId(project.getProjectId()));
-								project.setCategories(findCategoriesByProjectId(project.getProjectId()));
+								project.setMaterials(fetchMaterialsByProjectId(project.getProjectId()));
+								project.setSteps(fetchStepsByProjectId(project.getProjectId()));
+								project.setCategories(fetchCategoriesByProjectId(project.getProjectId()));
 								
 								// TO DO : Why does professor use the following:
+								// Okay I think I understand what is happening here
+								// instead of replacing, we are adding the results of fetchMaterial to the 
+								// existing List of materials for the project
 								// project.getMaterials().addAll(fetchMaterialsByProjectId(project.getProjectId()));
 							}
 						}
@@ -259,6 +254,7 @@ public class ProjectsDao extends DaoBase {
 	}
 
 
+	// Left over from trying to make this method myself
 	private List<Project> getProjectAndDetails(String query) {
 		try(Connection conn = DbConnection.getConnection()) {			
 			try(Statement stmt = conn.createStatement()) {
@@ -276,9 +272,9 @@ public class ProjectsDao extends DaoBase {
 					p.setDifficulty(Integer.valueOf(results.getString("difficulty")));
 					p.setNotes(results.getString("notes"));
 					
-					p.setMaterials(findMaterialsByProjectId(p.getProjectId()));
-					p.setSteps(findStepsByProjectId(p.getProjectId()));
-					p.setCategories(findCategoriesByProjectId(p.getProjectId()));
+					p.setMaterials(fetchMaterialsByProjectId(p.getProjectId()));
+					p.setSteps(fetchStepsByProjectId(p.getProjectId()));
+					p.setCategories(fetchCategoriesByProjectId(p.getProjectId()));
 					
 					projectResults.add(p);
 				}

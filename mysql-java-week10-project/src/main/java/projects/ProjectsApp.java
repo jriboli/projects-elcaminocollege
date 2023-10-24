@@ -13,17 +13,28 @@ public class ProjectsApp {
 	private Scanner scanner = new Scanner(System.in);
 	private ProjectService projectService = new ProjectService();
 	private Project currProject;
+	private String currItem = "";
 
 	private List<String> operations = List.of(
 			"1) Create and populate all tables",
 			"2) Add a project",
 			"3) List projects",
-			"4) Select a project by Id",
-			"5) Get Full project details by name", 
-			"6) Add materials (TBD)",
-			"7) Add steps (TBD)",
-			"8) Add categories (TBD)",
-			"9) Update a project (TBD)"
+			"4) Select a project"
+	);
+	
+	private List<String> projectOperations = List.of(
+			"1) Show Project Details",
+			"2) Edit Materials",
+			"3) Edit Steps",
+			"4) Edit Categories",
+			"5) Exit Project"
+	);
+	
+	private List<String> itemOperations = List.of(
+			"1) Show all project",
+			"2) Add a",
+			"3) Delete a",
+			"4) Exit"
 	);
 
 	public static void main(String[] args) {
@@ -39,56 +50,113 @@ public class ProjectsApp {
 		boolean done = false;
 
 		while (!done) {
-			int operation = getUserSelection();
-			try {
-				switch (operation) {
-				case -1:
-					done = exitMenu();
-					break;
-				case 1:
-					createTables();
-					break;
-				case 2:
-					addProject();
-					break;
-				case 3:
-					listProjects();
-					break;
-				case 4:
-					setCurrentProjectById();
-					break;
-				case 5:
-					setCurrentProject();
-					break;
-				case 6:
-					addMaterials();
-					break;
-				case 7:
-					addSteps();
-					break;
-				case 8:
-					addCategories();
-					break;
-				case 9: 
-					updateAProject();
-				default:
-					System.out.println("\n" + operation + " is not valid. Try again");
-					break;
+			if(currProject == null) {
+				int operation = getUserSelection();
+				try {
+					switch (operation) {
+					case -1:
+						done = exitMenu();
+						break;
+					case 1:
+						createTables();
+						break;
+					case 2:
+						addProject();
+						break;
+					case 3:
+						listProjects();
+						break;
+					case 4:
+						setCurrentProjectById();
+						break;
+					default:
+						System.out.println("\n" + operation + " is not valid. Try again");
+						break;
+					}
+				} catch (Exception e) {
+					System.out.println("\nError: " + e.toString() + " Try again");
 				}
-			} catch (Exception e) {
-				System.out.println("\nError: " + e.toString() + " Try again");
+			} 
+			else {
+				if(currItem == "") {
+					int operation = getProjectSelection();
+					try {
+						switch (operation) {
+						case 1:
+							showProjectDetails();
+							break;
+						case 2:
+							currItem = "material";
+							break;
+						case 3:
+							currItem = "step";
+							break;
+						case 4:
+							currItem = "category";
+							break;
+						case 5:
+							// Go back to main menu
+							currProject = null;
+							break;
+						default:
+							System.out.println("\n" + operation + " is not valid. Try again");
+							break;
+						}
+					} catch (Exception e) {
+						System.out.println("\nError: " + e.toString() + " Try again");
+					}
+				}
+				else {
+					int operation = getItemSelection(currItem);
+					try {
+						switch (operation) {
+						case 1:
+							showItemDetails();
+							break;
+						case 2:
+							addItem();
+							break;
+						case 3:
+							deleteItem();
+							break;
+						case 4:
+							// Go back to Project menu
+							currItem = "";
+							break;
+						default:
+							System.out.println("\n" + operation + " is not valid. Try again");
+							break;
+						}
+					} catch (Exception e) {
+						System.out.println("\nError: " + e.toString() + " Try again");
+					}
+				}
 			}
 		}
 	}
 
 	private int getUserSelection() {
 		printOperations();
-		Integer op = getIntInput("\nEnter an operation number (press Enter to quit)");
+		Integer op = getIntInput("Enter an operation number (press Enter to quit)");
 
 		return Objects.isNull(op) ? -1 : op;
 	}
 	
-	// OPERATIONS
+	private int getProjectSelection() {
+		printProjectOperations();
+		Integer op = getIntInput("Enter an operation number:");
+
+		return Objects.isNull(op) ? -1 : op;
+	}
+	
+	private int getItemSelection(String item) {
+		printItemOperations(item);
+		Integer op = getIntInput("Enter an operation number:");
+
+		return Objects.isNull(op) ? -1 : op;
+	}
+	
+	// MAIN OPERATION METHODS
 	private void listProjects() {
 		List<Project> projects = projectService.fetchAllProjects();
 		
@@ -97,10 +165,6 @@ public class ProjectsApp {
 		projects.forEach(project -> System.out.println(" " + project.getProjectId() + ": " + project.getProjectName()));
 	}
 	
-	private void updateAProject() {
-		System.out.println("Does nothing currently ... but soon");
-	}
-
 	private void setCurrentProjectById() {
 		listProjects();
 		Integer projectId = getIntInput("Enter a project ID to select a project");
@@ -116,30 +180,6 @@ public class ProjectsApp {
 			System.out.println("\nYou are working with project: " + currProject);
 		}
 		
-	}
-	
-	private void setCurrentProject() {
-		// Allow the user to search for project by name
-		String projectName = getStringInput("Enter the full or partial name of the project");
-		
-		Project dbResult = projectService.fetchSingleProject(projectName);
-		if(dbResult.getProjectId() != null) {
-			System.out.println("Project: \n" + dbResult);
-		} else {
-			System.out.println(String.format("No project found under '%s'", projectName));
-		}
-	}
-
-	private void addCategories() {
-		System.out.println("Does nothing currently ... but soon");
-	}
-
-	private void addSteps() {
-		System.out.println("Does nothing currently ... but soon");
-	}
-
-	private void addMaterials() {
-		System.out.println("Does nothing currently ... but soon");
 	}
 
 	private void addProject() {
@@ -172,15 +212,84 @@ public class ProjectsApp {
 		// Save the project object to the database
 		Project dbProject = projectService.addProject(project);
 		System.out.println("You have successfully create project: \n" + dbProject);
+		
+		// Set current Project 
+		currProject = projectService.fetchSingleProjectById(dbProject.getProjectId());
 	}
-
+	
 	private void createTables() {
 		// Loading some values into database via a file
 		projectService.createAndPopulateTables();
 		System.out.println("\nTables created and populated.");
 	}
 	
-	// USER INPUT
+	// PROJECT OPERATION METHODS
+	private void showProjectDetails() {
+		System.out.println("\nProject Details: " + currProject);
+	}
+	
+	// ITEM OPERATION METHODS 
+	private void showItemDetails() {
+		System.out.println("Does nothing currently ... but soon");
+	}
+	
+	private void addItem() {
+		switch(currItem) {
+		case "material":
+			addMaterials();
+			break;
+		case "step":
+			addSteps();
+			break;
+		case "category":
+			addCategories();
+			break;
+		default:
+			System.out.println("Invalid Item. Please use 'material', 'step' or 'category'");
+		}
+	}
+	
+	private void deleteItem() {
+		switch(currItem) {
+		case "material":
+			deleteMaterials();
+			break;
+		case "step":
+			deleteSteps();
+			break;
+		case "category":
+			deleteCategories();
+			break;
+		default:
+			System.out.println("Invalid Item. Please use 'material', 'step' or 'category'");
+		}
+	}
+	
+	private void deleteCategories() {
+		System.out.println("Does nothing currently ... but soon");
+	}
+
+	private void deleteSteps() {
+		System.out.println("Does nothing currently ... but soon");
+	}
+
+	private void deleteMaterials() {
+		System.out.println("Does nothing currently ... but soon");		
+	}
+
+	private void addCategories() {
+		System.out.println("Does nothing currently ... but soon");
+	}
+
+	private void addSteps() {
+		System.out.println("Does nothing currently ... but soon");
+	}
+
+	private void addMaterials() {
+		System.out.println("Does nothing currently ... but soon");
+	}
+	
+	// USER INPUT METHODS
 	private Integer getIntInput(String prompt) {
 		// Validating user input - cause you can never trust the user
 		String input = getStringInput(prompt);
@@ -224,9 +333,12 @@ public class ProjectsApp {
 			throw new DbException(input + " is not a valid decimal number.");
 		}
 	}
-
+	
 	private String getStringInput(String prompt) {
-		System.out.print(prompt + ": ");
+		String projectStr = "";
+		if(currProject != null)
+			projectStr = "[Current Project : " + currProject.getProjectId() + " : " + currProject.getProjectName() + "] ";
+		System.out.print("\n" + projectStr + prompt + ": ");
 		String line = scanner.nextLine();
 
 		return line.isBlank() ? null : line.trim();
@@ -239,12 +351,12 @@ public class ProjectsApp {
 		return true;
 	}
 	
-	// MENU DISPLAY
-	private void printOperations() {
+	// MENU DISPLAY METHODS 
+	private void printOperations() { 
 		System.out.println();
 		System.out.println("***********************************");
 		System.out.println("***********************************");
-		System.out.println("Select from the following options:");
+		System.out.println("[MAIN MENU] Select from the following options:");
 		
 		// Commented out my original code:
 		//for(String operation : operations) {
@@ -256,6 +368,24 @@ public class ProjectsApp {
 		operations.forEach(operation -> System.out.println("\t" + operation));
 	}
 	
+	private void printProjectOperations() {
+		System.out.println();
+		System.out.println("***********************************");
+		System.out.println("***********************************");
+		System.out.println("[PROJECT MENU] Select from the following options:");
+		
+		projectOperations.forEach(operation -> System.out.println("\t" + operation));
+	}
+	
+	private void printItemOperations(String item) {
+		System.out.println();
+		System.out.println("***********************************");
+		System.out.println("***********************************");
+		System.out.println("[" + item.toUpperCase() + " MENU] Select from the following options:");
+		
+		itemOperations.forEach(operation -> System.out.println("\t" + operation + " " + item));
+	}
+
 	private boolean exitMenu() {
 		System.out.println("\nExiting the menu. TTFN!");
 		return true;

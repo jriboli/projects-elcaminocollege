@@ -97,10 +97,6 @@ public class ProjectService {
 		return projectsDao.insertProject(project);
 	}
 
-	public Project fetchSingleProject(String projectName) {
-		return projectsDao.fetchFullProjectDetails(projectName);
-	}
-
 	public List<Project> fetchAllProjects() {
 		return projectsDao.fetchAllProjects();
 	}
