@@ -3,8 +3,8 @@
   <groupId>com.promineotech</groupId>
   <artifactId>mysql-java-week10-project</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  
-  <properties>
+
+	<properties>
 		<java.version>17</java.version>
 	</properties>
 
