@@ -23,10 +23,13 @@
     <fullyQualifiedTypeName name="java.lang.String"/>
     <fullyQualifiedTypeName name="java.sql.Statement"/>
     <fullyQualifiedTypeName name="java.sql.ResultSet"/>
-    <fullyQualifiedTypeName name="projects.entity.Material"/>
-    <fullyQualifiedTypeName name="projects.entity.Step"/>
     <fullyQualifiedTypeName name="java.util.LinkedList"/>
-    <fullyQualifiedTypeName name="projects.entity.Category"/>
     <fullyQualifiedTypeName name="java.util.Optional"/>
     <fullyQualifiedTypeName name="java.util.Objects"/>
+    <fullyQualifiedTypeName name="recipes.entity.Ingredient"/>
+    <fullyQualifiedTypeName name="jdk.jfr.Category"/>
+    <fullyQualifiedTypeName name="recipes.entity.Category"/>
+    <fullyQualifiedTypeName name="projects.entity.Category"/>
+    <fullyQualifiedTypeName name="projects.entity.Step"/>
+    <fullyQualifiedTypeName name="projects.entity.Material"/>
 </qualifiedTypeNameHistroy>

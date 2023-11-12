@@ -10,6 +10,7 @@ import recipes.entity.Ingredient;
 import recipes.entity.Recipe;
 import recipes.entity.Step;
 import recipes.entity.Unit;
+import recipes.entity.Category;
 import recipes.exception.DbException;
 import recipes.service.RecipeService;
 
@@ -24,18 +25,17 @@ public class Recipes {
 			"3) List recipes",
 			"4) Select a recipe",
 			"5) Add ingredient to current recipe",
-			"6) Add step to current recipe"
+			"6) Add step to current recipe",
+			"7) Add category to current recipe",
+			"8) Update step",
+			"9) Delete recipe"
 	);
 
 	public static void main(String[] args) {
-		// TODO Auto-generated constructor stub
-		// Connection conn = DbConnection.getConnection();
-
 		new Recipes().displayMenu();
 	}
 
 	private void displayMenu() {
-		// TODO Auto-generated method stub
 		boolean done = false;
 
 		while (!done) {
@@ -63,6 +63,15 @@ public class Recipes {
 				case 6:
 					addStep();
 					break;
+				case 7:
+					addCategory();
+					break;
+				case 8:
+					modifyStep();
+					break;
+				case 9:
+					deleteRecipe();
+					break;
 				default:
 					System.out.println("\n" + operation + " is not valid. Try again");
 					break;
@@ -73,8 +82,67 @@ public class Recipes {
 		}
 	}
 
+	private void deleteRecipe() {
+		listRecipes();
+		Integer recipeId = getIntInput("Enter the ID of the recipe to delete");
+		
+		if(Objects.nonNull(recipeId)) {
+			rs.deleteRecipe(recipeId);
+			
+			if(Objects.nonNull(curRecipe) && curRecipe.getRecipeId().equals(recipeId)) {
+				curRecipe = null;
+			}
+		}
+				
+	}
+
+	private void modifyStep() {
+		if(Objects.isNull(curRecipe)) {
+			System.out.println("\nPlease select a recipe first. ");
+			return;
+		}
+		
+		List<Step> steps = rs.fetchSteps(curRecipe.getRecipeId());
+		System.out.println("\nSteps for current recipe");
+		
+		steps.forEach(step -> System.out.println("    " + step));
+		
+		Integer stepId = getIntInput("Enter step ID for step to modify");
+		
+		if(Objects.nonNull(stepId)) {
+			String stepText = getStringInput("Enter new step text");
+			
+			if(Objects.nonNull(stepText)) {
+				Step step = new Step();
+				step.setStepId(stepId);
+				step.setStepText(stepText);
+				
+				rs.modifyStep(step);
+				curRecipe = rs.fetchRecipeById(step.getRecipeId());				
+			}
+		}
+		
+	}
+
+	private void addCategory() {
+		if(Objects.isNull(curRecipe)) {
+			System.out.println("\nPlease select a recipe first. ");
+			return;
+		}
+		
+		List<Category> categories = rs.fetchCategories();
+		
+		categories.forEach(category -> System.out.println("    " + category.getCategoryName()));
+		String category = getStringInput("Enter the category to add");
+		
+		if(Objects.nonNull(category)) {
+			rs.addCategoryToRecipe(curRecipe.getRecipeId(), category);
+			curRecipe = rs.fetchRecipeById(curRecipe.getRecipeId());
+			
+		}
+	}
+
 	private void addStep() {
-		// TODO Auto-generated method stub
 		if(Objects.isNull(curRecipe)) {
 			System.out.println("\nPlease select a recipe first. ");
 			return;
@@ -93,7 +161,6 @@ public class Recipes {
 	}
 
 	private void addIngredient() {
-		// TODO Auto-generated method stub
 		if(Objects.isNull(curRecipe)) {
 			System.out.println("\nPlease select a recipe first. ");
 			return;
@@ -157,7 +224,6 @@ public class Recipes {
 	}
 
 	private void addRecipe() {
-		// TODO Auto-generated method stub
 		String name = getStringInput("Enter the recipe name");
 		String notes = getStringInput("Enter the recipe notes");
 		Integer numOfServings = getIntInput("Enter the number of servings");
@@ -182,7 +248,6 @@ public class Recipes {
 	}
 
 	private LocalTime minutesToLocalTime(Integer numMinutes) {
-		// TODO Auto-generated method stub
 		int min = Objects.isNull(numMinutes) ? 0 : numMinutes;
 		int hours = min / 60;
 		int minutes = min % 60;
@@ -191,13 +256,11 @@ public class Recipes {
 	}
 
 	private void createTables() {
-		// TODO Auto-generated method stub
 		rs.createAndPopulateTables();
 		System.out.println("\nTables created and populated.");
 	}
 
 	private boolean exitMenu() {
-		// TODO Auto-generated method stub
 		System.out.println("\nExiting the menu. TTFN!");
 		return true;
 	}
@@ -210,7 +273,6 @@ public class Recipes {
 	}
 
 	private Integer getIntInput(String prompt) {
-		// TODO Auto-generated method stub
 		String input = getStringInput(prompt);
 
 		if (Objects.isNull(input)) {
@@ -225,7 +287,6 @@ public class Recipes {
 	}
 
 	private Double getDoubleInput(String prompt) {
-		// TODO Auto-generated method stub
 		String input = getStringInput(prompt);
 
 		if (Objects.isNull(input)) {
@@ -240,7 +301,6 @@ public class Recipes {
 	}
 
 	private String getStringInput(String prompt) {
-		// TODO Auto-generated method stub
 		System.out.print(prompt + ": ");
 		String line = sc.nextLine();
 
@@ -248,7 +308,6 @@ public class Recipes {
 	}
 
 	private void printOperations() {
-		// TODO Auto-generated method stub
 		System.out.println();
 		System.out.println("Here is what you can do:");
 //		for(String operation : operations) {
