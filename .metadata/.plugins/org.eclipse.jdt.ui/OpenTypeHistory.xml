@@ -2,4 +2,5 @@
 <typeInfoHistroy>
     <typeInfo handle="=mysql-java-week07-project/C:\/Program Files\/Java\/jdk-17\/lib\/jrt-fs.jar`java.base=/javadoc_location=/https:\/\/docs.oracle.com\/en\/java\/javase\/17\/docs\/api\/=/=/maven.pomderived=/true=/&lt;java.lang(RuntimeException.class[RuntimeException" modifiers="33" timestamp="1693415256670"/>
     <typeInfo handle="=mysql-java-week09/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;provided.util{DaoBase.java[DaoBase" modifiers="1025" timestamp="1697388781103"/>
+    <typeInfo handle="=unit-tests-week12/C:\/Program Files\/Java\/jdk-17\/lib\/jrt-fs.jar`java.base=/javadoc_location=/https:\/\/docs.oracle.com\/en\/java\/javase\/17\/docs\/api\/=/=/maven.pomderived=/true=/&lt;java.lang(Exception.class[Exception" modifiers="33" timestamp="1693415256670"/>
 </typeInfoHistroy>

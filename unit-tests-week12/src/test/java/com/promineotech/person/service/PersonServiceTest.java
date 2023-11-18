@@ -1,8 +1,10 @@
 package com.promineotech.person.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,8 @@ class PersonServiceTest {
 		assertThat(personService.findName("sarah")).isEqualTo("Sarah");
 		assertThat(personService.findName("susan")).isEqualTo("Susan");
 		assertThat(personService.findName("stephanie")).isEqualTo("Stephanie");
+		
+		assertThatThrownBy(() -> personService.findName("maria")).isInstanceOf(NoSuchElementException.class);
 	}
 
 }
