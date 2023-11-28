@@ -8,7 +8,7 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
-    defer-datasource-initialization: ture
+    defer-datasource-initialization: true
     
   sql:
     init:
