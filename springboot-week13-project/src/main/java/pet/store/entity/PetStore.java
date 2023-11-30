@@ -34,16 +34,25 @@ public class PetStore {
 	@ToString.Exclude
 	// MappedBy is like naming it for access in the linked class
 	// Note here "petStore" is used in the Employee class
+	// -- Notes from BreakOUt videos:
+	// Bidirectional one-to-many 
 	@OneToMany(mappedBy = "petStore", cascade = CascadeType.ALL)
 	// I wonder if the Class Type here matters for the linking ???
+	// -- Note from BreakOut videos:
+	// Yes, the class type matters
 	private Set<Employee> employees = new HashSet<>();
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@ManyToMany(cascade = CascadeType.PERSIST)
+	
 	// Name is the TABLE name
 	// JoinColumns is using our PetStore ID 
 	// This is because one of the two Many to Many artifacts needs to setup this way
+	// Turns out there is a "ownership" understanding needed
+	// -- Notes from BreakOut videos:
+	// The joinColumns attribute must name the table column, NOT Java field name
+	// The inverseJoinColumns must name the table column in the "owned" table
 	@JoinTable(name = "pet_store_customers",
 			joinColumns = @JoinColumn(name = "pet_store_id"),
 			inverseJoinColumns = @JoinColumn(name = "customer_id"))

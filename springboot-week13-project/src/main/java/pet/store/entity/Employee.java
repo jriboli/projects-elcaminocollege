@@ -23,11 +23,18 @@ public class Employee {
 	private String phone;
 	private String jobTitle;
 	
+	// These are to help print in JSON 
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@ManyToOne(cascade = CascadeType.ALL)
+	
+	// Is this JoinColumn annotation needed - ???
+	// -- Notes from BreakOut videos
+	// This helps JPA know how to look up PetStore
 	@JoinColumn(name = "pet_store_id", nullable = false)
-	// This name needed to match the "MappedBy" field in the PetStore class - WHY ???
+	// This name needed to match the "MappedBy" field in the PetStore class
+	// -- Notes from BreakOut videos:
+	// It does need to match. The field name 'petStore' needs to match the 'MappedBy'. 
 	private PetStore petStore;
 	
 }
