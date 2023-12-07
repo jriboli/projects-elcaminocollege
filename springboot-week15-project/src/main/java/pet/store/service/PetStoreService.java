@@ -34,6 +34,27 @@ public class PetStoreService {
 	@Autowired
 	private CustomerDao customerDao;
 
+
+	/*
+	 * PET STORE --------------------------------------------------------------------------------------
+	 */
+	
+	@Transactional(readOnly = true)
+	public List<PetStoreData> findAllStores() {
+		List<PetStore> petStores = petStoreDao.findAll();
+		List<PetStoreData> results = new LinkedList<>();
+		
+		petStores.forEach(petStore -> results.add(new PetStoreData(petStore)));
+		
+		return results;		
+	}
+
+	@Transactional(readOnly = true)
+	public PetStoreData findStore(Long id) {
+		PetStore petStore = findOrCreatePetStore(id);
+		return new PetStoreData(petStore);
+	}
+	
 	@Transactional(readOnly = false)
 	public PetStoreData saveStore(PetStoreData petStoreData) {
 		Long petStoreId = petStoreData.getPetStoreId();
@@ -41,6 +62,18 @@ public class PetStoreService {
 		
 		setFieldsInPetStore(petStore, petStoreData);
 		return new PetStoreData(petStoreDao.save(petStore));
+	}
+
+	@Transactional(readOnly = false)
+	public PetStoreData updateStore(Long id, PetStoreData petStoreData) {
+		PetStore petStore = findPetStoreById(id);
+		
+		return new PetStoreData(petStoreDao.save(petStore));
+	}
+	
+	@Transactional(readOnly = false)
+	public void deleteStore(Long id) {
+		petStoreDao.deleteById(id);		
 	}
 
 	private void setFieldsInPetStore(PetStore petStore, PetStoreData petStoreData) {
@@ -68,26 +101,10 @@ public class PetStoreService {
 		return petStoreDao.findById(petStoreId).orElseThrow(() -> new NoSuchElementException("PetStore with ID=" + petStoreId + " was not found."));
 	}
 
-	public List<PetStoreData> findAllStores() {
-		List<PetStore> petStores = petStoreDao.findAll();
-		List<PetStoreData> results = new LinkedList<>();
-		
-		petStores.forEach(petStore -> results.add(new PetStoreData(petStore)));
-		
-		return results;		
-	}
-
-	@Transactional(readOnly = true)
-	public PetStoreData findStore(Long id) {
-		PetStore petStore = findOrCreatePetStore(id);
-		return new PetStoreData(petStore);
-	}
-
-	public PetStoreData updateStore(Long id, PetStoreData petStoreData) {
-		PetStore petStore = findPetStoreById(id);
-		
-		return new PetStoreData(petStoreDao.save(petStore));
-	}
+	
+	/*
+	 * EMPLOYEE --------------------------------------------------------------------------------------
+	 */
 
 	public List<EmployeeData> findAllEmployeesByStore(Long petStoreId) {
 		List<Employee> employees = employeeDao.findByPetStorePetStoreId(petStoreId);
@@ -96,22 +113,6 @@ public class PetStoreService {
 		employees.forEach(employee -> results.add(new EmployeeData(employee)));
 		
 		return results;		
-	}
-
-	private Employee findEmployeeById(Long employeeId) {
-		return employeeDao.findById(employeeId).orElseThrow(() -> new NoSuchElementException("Employee with ID=" + employeeId + " was not found."));
-	}
-	
-	private Employee findOrCreateEmployee(Long employeeId) {
-		Employee employee;
-		if(Objects.isNull(employeeId)) {
-			employee = new Employee();
-		}
-		else {
-			employee = findEmployeeById(employeeId);
-		}
-		
-		return employee;
 	}
 	
 	public EmployeeData findEmployee(Long id, Long employeeId) {
@@ -136,6 +137,26 @@ public class PetStoreService {
 		return new EmployeeData(employeeDao.save(employee));		
 	}
 
+	public void deleteEmployee(Long id, Long employeeId) {
+		employeeDao.deleteById(employeeId);	
+	}
+
+	private Employee findEmployeeById(Long employeeId) {
+		return employeeDao.findById(employeeId).orElseThrow(() -> new NoSuchElementException("Employee with ID=" + employeeId + " was not found."));
+	}
+	
+	private Employee findOrCreateEmployee(Long employeeId) {
+		Employee employee;
+		if(Objects.isNull(employeeId)) {
+			employee = new Employee();
+		}
+		else {
+			employee = findEmployeeById(employeeId);
+		}
+		
+		return employee;
+	}
+
 	private void setFieldsInEmployee(Employee employee, EmployeeData employeeData) {
 		employee.setFirstName(employeeData.getFirstName());
 		employee.setLastName(employeeData.getLastName());
@@ -143,6 +164,11 @@ public class PetStoreService {
 		employee.setPhone(employeeData.getPhone());
 		employee.setPetStore(employeeData.getPetStore());		
 	}
+	
+
+	/*
+	 * CUSTOMER --------------------------------------------------------------------------------------
+	 */
 
 	public List<CustomerData> findAllCustomersByStore(Long id) {
 		// Name details are notred in the CustomerDao class
@@ -162,6 +188,10 @@ public class PetStoreService {
 		
 		return new CustomerData(customer);
 	}
+	
+	public void deleteCustomer(Long id, Long customerId) {
+		customerDao.deleteById(customerId);		
+	}
 
 	private Customer findOrCreateCustomer(Long customerId) {
 		Customer customer;
@@ -178,6 +208,10 @@ public class PetStoreService {
 	private Customer findCustomerById(Long customerId) {
 		return customerDao.findById(customerId).orElseThrow(() -> new NoSuchElementException("Customer with ID=" + customerId + " was not found."));
 	}
+
+	
+
+
 	
 	
 
