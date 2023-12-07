@@ -136,6 +136,7 @@ public class PetStoreService {
 	}
 
 	public List<CustomerData> findAllCustomersByStore(Long id) {
+		// Name details are notred in the CustomerDao class
 		List<Customer> customers = customerDao.findPetStoreCustomersByPetStores_PetStoreId(id);
 		List<CustomerData> results = new LinkedList<>();
 		
