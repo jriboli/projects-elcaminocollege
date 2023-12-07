@@ -28,7 +28,9 @@ public class Employee {
 	// These are to help print in JSON 
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToOne(cascade = CascadeType.ALL)
+	//@ManyToOne(cascade = CascadeType.ALL)
+	// Removed the cascade type it was trying to delete the Store when an employee was removed
+	@ManyToOne
 	
 	// Is this JoinColumn annotation needed - ???
 	// -- Notes from BreakOut videos

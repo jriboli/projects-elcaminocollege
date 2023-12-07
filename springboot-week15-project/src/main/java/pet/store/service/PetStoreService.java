@@ -133,7 +133,7 @@ public class PetStoreService {
 		Long employeeId = employeeData.getEmployeeId();
 		Employee employee = findOrCreateEmployee(id, employeeId);
 		
-		// THis is no longer needed, as we are passing the ID along in the method call
+		// This is no longer needed, as we are passing the ID along in the method call
 		//PetStore petStore = findPetStoreById(employeeData.getPetStore().getPetStoreId());
 		employeeData.setPetStore(petStore);
 		
@@ -143,6 +143,7 @@ public class PetStoreService {
 
 	public void deleteEmployee(Long id, Long employeeId) {
 		Employee employee = findEmployeeById(id, employeeId);
+		
 		employeeDao.delete(employee);
 	}
 	
@@ -234,6 +235,12 @@ public class PetStoreService {
 
 	public void deleteCustomer(Long id, Long customerId) {
 		Customer customer = findCustomerById(id, customerId);
+		
+		// Remove the customer from each associated store
+		for(PetStore ps : customer.getPetStores()) {
+			ps.getPetStoreCustomers().remove(customer);
+		}
+		
 		customerDao.delete(customer);
 	}
 	

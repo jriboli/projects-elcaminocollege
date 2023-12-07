@@ -46,19 +46,8 @@ public class PetStore {
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(cascade = CascadeType.PERSIST)
-	
-	// Name is the TABLE name
-	// JoinColumns is using our PetStore ID 
-	// This is because one of the two Many to Many artifacts needs to setup this way
-	// Turns out there is a "ownership" understanding needed
-	// -- Notes from BreakOut videos:
-	// The joinColumns attribute must name the table column, NOT Java field name
-	// The inverseJoinColumns must name the table column in the "owned" table
-	@JoinTable(name = "pet_store_customers",
-			joinColumns = @JoinColumn(name = "pet_store_id"),
-			inverseJoinColumns = @JoinColumn(name = "customer_id"))
-	// Again wonder if the Class Type here matters for the linking ??? 
+	// This MappedBy needed to match the ManyToMany in PetStore class - WHY ???
+	@ManyToMany(mappedBy = "petStores", cascade = CascadeType.ALL)
 	private Set<Customer> petStoreCustomers = new HashSet<>();
 	
 }
