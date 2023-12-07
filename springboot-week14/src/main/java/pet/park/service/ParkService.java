@@ -12,9 +12,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pet.park.controller.model.AmenityDao;
 import pet.park.controller.model.ContributorData;
 import pet.park.controller.model.PetParkData;
+import pet.park.dao.AmenityDao;
 import pet.park.dao.ContributorDao;
 import pet.park.dao.PetParkDao;
 import pet.park.entity.Amenity;
@@ -151,6 +151,20 @@ public class ParkService {
 	private PetPark findPetParkById(Long petParkId) {
 		return petParkDao.findById(petParkId)
 				.orElseThrow(() -> new NoSuchElementException("No petPark with ID=" + petParkId + " exists."));
+	}
+
+	public List<PetParkData> findPetParksByContributor(Long id) {
+		return (List<PetParkData>) findPetParkById(id);
+	}
+
+	public PetParkData findPetPark(Long id, Long parkId) {
+		PetPark petPark = findPetParkById(parkId);
+		
+		if(petPark.getContributor().getContributorId() != id) {
+			throw new NoSuchElementException("PetPark exists but not for that Contributor");
+		}
+		
+		return new PetParkData(petPark); 
 	}
 
 }

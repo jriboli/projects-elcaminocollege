@@ -84,4 +84,19 @@ public class ParkController {
 		
 		return parkService.savePetPark(id, petParkData);
 	}
+	
+	// Still needs some work
+	@GetMapping("/contributor/{id}/park")
+	public List<PetParkData> getAllPetParksByContributor(@PathVariable Long id) {
+		log.info("Getting petParks for Contributor with ID={}", id);
+		
+		return parkService.findPetParksByContributor(id);
+	}
+	
+	@GetMapping("/contributor/{id}/park/{parkId}")
+	public PetParkData getPetParkById(@PathVariable Long id, @PathVariable Long parkId) {
+		log.info("Find petPark with ID={} for Contributor with ID={}", parkId, id);
+		
+		return parkService.findPetPark(id, parkId);
+	}
 }
