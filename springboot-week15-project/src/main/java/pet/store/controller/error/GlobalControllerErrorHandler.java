@@ -30,6 +30,12 @@ public class GlobalControllerErrorHandler {
 		private String uri; 
 	}
 	
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	public ExceptionMessage handleIllegalArgumentException(Exception ex, WebRequest webRequest) {
+		return buildExceptionMessage(ex, HttpStatus.NO_CONTENT, webRequest, LogStatus.MESSAGE_ONLY);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
 	// Why did we need to add this ResponseStatus if the method below did not need it - WHY ???

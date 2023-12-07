@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import pet.store.controller.model.CustomerData;
 import pet.store.controller.model.EmployeeData;
 import pet.store.controller.model.PetStoreData;
-import pet.store.entity.PetStore;
 import pet.store.service.PetStoreService;
 
 @RestController
@@ -99,14 +98,22 @@ public class PetStoreController {
 	@PostMapping("/store/{id}/employee")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public EmployeeData insertEmployee(@PathVariable Long id, @RequestBody EmployeeData employeeData) {
-		employeeData.setPetStore(new PetStore());
-		employeeData.getPetStore().setPetStoreId(id);
+		// This were breaking the rule, we should not access the Data layer directly
+		// We should be going through the Service layer - Now Removed
+		//employeeData.setPetStore(new PetStore());
+		//employeeData.getPetStore().setPetStoreId(id);
 		log.info("Create Employee {}", employeeData);
 		
-		return petStoreService.saveEmployee(employeeData);
+		return petStoreService.saveEmployee(id, employeeData);
 	}
 	
-	// CREATE A PUT for EMPLOYEE
+	@PutMapping("/store/{id}/employee/{employeeId}")
+	public EmployeeData updateEmployee(@PathVariable Long id, @PathVariable Long employeeId, @RequestBody EmployeeData employeeData) {
+		employeeData.setEmployeeId(employeeId);
+		log.info("Update Employee {}", employeeData);
+		
+		return petStoreService.saveEmployee(id, employeeData);
+	}
 	
 	@DeleteMapping("/store/{id}/employee/{employeeId}")
 	public Map<String, String> deleteEmployee(@PathVariable Long id, @PathVariable Long employeeId) {
@@ -135,9 +142,21 @@ public class PetStoreController {
 		return petStoreService.findCustomer(id, customerId);
 	}
 	
-	// CREATE A POST for CUSTOMER
+	@PostMapping("/store/{id}/customer")
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public CustomerData insertCustomer(@PathVariable Long id, @RequestBody CustomerData customerData) {
+		log.info("Creating customer {}", customerData);
+		
+		return petStoreService.saveCustomer(id, customerData);
+	}
 	
-	// CREATE A PUT for CUSTOMER
+	@PutMapping("/store/{id}/customer/{customerId}")
+	public CustomerData updateCustomer(@PathVariable Long id, @PathVariable Long customerId, @RequestBody CustomerData customerData) {
+		customerData.setCustomerId(customerId);
+		log.info("Update customer {}", customerData);
+		
+		return petStoreService.saveCustomer(id, customerData);
+	}
 	
 	@DeleteMapping("/store/{id}/customer/{customerId}")
 	public Map<String, String> deleteCustomer(@PathVariable Long id, @PathVariable Long customerId) {

@@ -3,6 +3,8 @@ package pet.store.controller.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pet.store.entity.Customer;
@@ -15,6 +17,8 @@ public class CustomerData {
 	private String firstName;
 	private String lastName;
 	private String email;
+	@JsonIgnore
+	private Set<PetStore> petStore;
 	private Set<PetStoreResponse> petStores = new HashSet<>();
 	
 	public CustomerData(Customer customer) {
@@ -22,6 +26,7 @@ public class CustomerData {
 		this.firstName = customer.getFirstName();
 		this.lastName = customer.getLastName();
 		this.email = customer.getEmail();
+		this.petStore = customer.getPetStores();
 		
 		customer.getPetStores().forEach(petStore -> petStores.add(new PetStoreResponse(petStore)));
 	}

@@ -1,9 +1,11 @@
 package pet.store.service;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +75,9 @@ public class PetStoreService {
 	
 	@Transactional(readOnly = false)
 	public void deleteStore(Long id) {
-		petStoreDao.deleteById(id);		
+		// Adding this to first check that the ID is valid, or throw error
+		PetStore petStore = findPetStoreById(id);
+		petStoreDao.delete(petStore);	
 	}
 
 	private void setFieldsInPetStore(PetStore petStore, PetStoreData petStoreData) {
@@ -116,21 +120,19 @@ public class PetStoreService {
 	}
 	
 	public EmployeeData findEmployee(Long id, Long employeeId) {
-		Employee employee = findOrCreateEmployee(employeeId);
-		
-		if(employee.getPetStore().getPetStoreId() != id) {
-			return null;
-		}
+		Employee employee = findOrCreateEmployee(id, employeeId);
 		
 		return new EmployeeData(employee);
 	}
 
 	@Transactional(readOnly = false)
-	public EmployeeData saveEmployee(EmployeeData employeeData) {
+	public EmployeeData saveEmployee(Long id, EmployeeData employeeData) {
+		PetStore petStore = findPetStoreById(id);
 		Long employeeId = employeeData.getEmployeeId();
-		Employee employee = findOrCreateEmployee(employeeId);
+		Employee employee = findOrCreateEmployee(id, employeeId);
 		
-		PetStore petStore = findPetStoreById(employeeData.getPetStore().getPetStoreId());
+		// THis is no longer needed, as we are passing the ID along in the method call
+		//PetStore petStore = findPetStoreById(employeeData.getPetStore().getPetStoreId());
 		employeeData.setPetStore(petStore);
 		
 		setFieldsInEmployee(employee, employeeData);
@@ -138,23 +140,31 @@ public class PetStoreService {
 	}
 
 	public void deleteEmployee(Long id, Long employeeId) {
-		employeeDao.deleteById(employeeId);	
-	}
-
-	private Employee findEmployeeById(Long employeeId) {
-		return employeeDao.findById(employeeId).orElseThrow(() -> new NoSuchElementException("Employee with ID=" + employeeId + " was not found."));
+		Employee employee = findEmployeeById(id, employeeId);
+		employeeDao.delete(employee);
 	}
 	
-	private Employee findOrCreateEmployee(Long employeeId) {
+	private Employee findOrCreateEmployee(Long id, Long employeeId) {
 		Employee employee;
 		if(Objects.isNull(employeeId)) {
 			employee = new Employee();
 		}
 		else {
-			employee = findEmployeeById(employeeId);
+			employee = findEmployeeById(id, employeeId);
 		}
 		
 		return employee;
+	}
+
+	private Employee findEmployeeById(Long id, Long employeeId) {
+		Employee employee = employeeDao.findById(employeeId).orElseThrow(() -> new NoSuchElementException("Employee with ID=" + employeeId + " was not found."));
+		
+		if(employee.getPetStore().getPetStoreId() == id) {
+			return employee;
+		}
+		else {
+			throw new IllegalArgumentException("No Employee with ID= " + employeeId + " is associated Store " + id);
+		}		
 	}
 
 	private void setFieldsInEmployee(Employee employee, EmployeeData employeeData) {
@@ -171,7 +181,7 @@ public class PetStoreService {
 	 */
 
 	public List<CustomerData> findAllCustomersByStore(Long id) {
-		// Name details are notred in the CustomerDao class
+		// Name details are noted in the CustomerDao class
 		List<Customer> customers = customerDao.findPetStoreCustomersByPetStores_PetStoreId(id);
 		List<CustomerData> results = new LinkedList<>();
 		
@@ -181,32 +191,77 @@ public class PetStoreService {
 	}
 
 	public CustomerData findCustomer(Long id, Long customerId) {
-		Customer customer = findOrCreateCustomer(customerId);
-		
-		// Do we need to filter on Store - ??? 
-		// Skipping the filter for now
-		
+		Customer customer = findOrCreateCustomer(id, customerId);		
 		return new CustomerData(customer);
 	}
-	
-	public void deleteCustomer(Long id, Long customerId) {
-		customerDao.deleteById(customerId);		
+
+	public CustomerData saveCustomer(Long id, CustomerData customerData) {
+		PetStore petStore = findPetStoreById(id);
+		Long customerId = customerData.getCustomerId();
+		Customer customer = findOrCreateCustomer(id, customerId);
+		
+		Set<PetStore> petStores = new HashSet<>();
+		if(Objects.isNull(customerData.getPetStore())) {
+			petStores.add(petStore);
+		}
+		else {
+			petStores = customerData.getPetStore();
+			boolean hasCustomerStoreAssociation = petStores
+					.stream()
+					.anyMatch(petStore2 -> petStore2.getPetStoreId() == id);
+			
+			if(!hasCustomerStoreAssociation) {
+				petStores.add(petStore);
+			}
+		}
+		
+		customerData.setPetStore(petStores);
+		
+		setFieldsInCustomer(customer, customerData);
+		return new CustomerData(customerDao.save(customer));
 	}
 
-	private Customer findOrCreateCustomer(Long customerId) {
+	public void deleteCustomer(Long id, Long customerId) {
+		Customer customer = findCustomerById(id, customerId);
+		customerDao.delete(customer);
+	}
+	
+	private void setFieldsInCustomer(Customer customer, CustomerData customerData) {
+		customer.setCustomerId(customerData.getCustomerId());
+		customer.setFirstName(customerData.getFirstName());
+		customer.setLastName(customerData.getLastName());
+		customer.setEmail(customerData.getEmail());
+		customer.setPetStores(customerData.getPetStore());
+		
+	}
+
+	private Customer findOrCreateCustomer(Long id, Long customerId) {
 		Customer customer;
 		if(Objects.isNull(customerId)) {
 			customer = new Customer();
 		}
 		else {
-			customer = findCustomerById(customerId);
+			customer = findCustomerById(id, customerId);
 		}
 
 		return customer;
 	}
 
-	private Customer findCustomerById(Long customerId) {
-		return customerDao.findById(customerId).orElseThrow(() -> new NoSuchElementException("Customer with ID=" + customerId + " was not found."));
+	private Customer findCustomerById(Long id, Long customerId) {
+		Customer customer = customerDao.findById(customerId).orElseThrow(() -> new NoSuchElementException("Customer with ID=" + customerId + " was not found."));
+		
+		Set<PetStore> petStores = customer.getPetStores();
+		
+		boolean hasPetStoreWithId = petStores
+				.stream()
+				.anyMatch(petStore -> petStore.getPetStoreId() == id);
+		
+		if(hasPetStoreWithId) {
+			return customer;
+		}
+		else {
+			throw new IllegalArgumentException("No Customer with ID= " + customerId + " is associated Store " + id);
+		}
 	}
 
 	
