@@ -68,6 +68,15 @@ public class PetStoreService {
 		return petStoreDao.findById(petStoreId).orElseThrow(() -> new NoSuchElementException("PetStore with ID=" + petStoreId + " was not found."));
 	}
 
+	public List<PetStoreData> findAllStores() {
+		List<PetStore> petStores = petStoreDao.findAll();
+		List<PetStoreData> results = new LinkedList<>();
+		
+		petStores.forEach(petStore -> results.add(new PetStoreData(petStore)));
+		
+		return results;		
+	}
+
 	@Transactional(readOnly = true)
 	public PetStoreData findStore(Long id) {
 		PetStore petStore = findOrCreatePetStore(id);

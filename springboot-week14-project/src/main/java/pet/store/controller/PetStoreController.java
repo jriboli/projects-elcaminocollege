@@ -48,6 +48,13 @@ public class PetStoreController {
 		return petStoreService.findStore(id);
 	}
 	
+	@GetMapping("/store")
+	public List<PetStoreData> findAllStores(){
+		log.info("Finding all Pet Stores");
+		
+		return petStoreService.findAllStores();
+	}
+	
 	@PutMapping("/store/{id}")
 	public PetStoreData updateStore(@PathVariable Long id, @RequestBody PetStoreData petStoreData) {
 		log.info("Updating store {} with {}", id, petStoreData);
