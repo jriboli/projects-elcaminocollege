@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
 import pet.store.controller.model.CustomerData;
 import pet.store.controller.model.EmployeeData;
 import pet.store.controller.model.PetStoreData;
@@ -22,6 +23,7 @@ import pet.store.entity.Employee;
 import pet.store.entity.PetStore;
 
 @Service
+@Slf4j
 public class PetStoreService {
 	
 	@Autowired
@@ -201,11 +203,11 @@ public class PetStoreService {
 		Customer customer = findOrCreateCustomer(id, customerId);
 		
 		Set<PetStore> petStores = new HashSet<>();
-		if(Objects.isNull(customerData.getPetStore())) {
+		if(Objects.isNull(customerData.getPetStores())) {
 			petStores.add(petStore);
 		}
 		else {
-			petStores = customerData.getPetStore();
+			petStores = customerData.getPetStores();
 			boolean hasCustomerStoreAssociation = petStores
 					.stream()
 					.anyMatch(petStore2 -> petStore2.getPetStoreId() == id);
@@ -215,9 +217,18 @@ public class PetStoreService {
 			}
 		}
 		
-		customerData.setPetStore(petStores);
+		customerData.setPetStores(petStores);
 		
 		setFieldsInCustomer(customer, customerData);
+//		log.info("Logging the customerData obj == {}", customerData);
+//		log.info("Logging the customer obj == {}", customer);
+//		
+//		log.info("Trying the GET method == {}", customerData.getPetStores());
+		
+		for(PetStore ps : petStores) {
+			ps.getPetStoreCustomers().add(customer);
+		}
+		
 		return new CustomerData(customerDao.save(customer));
 	}
 
@@ -231,8 +242,7 @@ public class PetStoreService {
 		customer.setFirstName(customerData.getFirstName());
 		customer.setLastName(customerData.getLastName());
 		customer.setEmail(customerData.getEmail());
-		customer.setPetStores(customerData.getPetStore());
-		
+		customer.setPetStores(customerData.getPetStores());		
 	}
 
 	private Customer findOrCreateCustomer(Long id, Long customerId) {

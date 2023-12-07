@@ -18,17 +18,17 @@ public class CustomerData {
 	private String lastName;
 	private String email;
 	@JsonIgnore
-	private Set<PetStore> petStore;
-	private Set<PetStoreResponse> petStores = new HashSet<>();
+	private Set<PetStore> petStores;
+	private Set<PetStoreResponse> petStoreList = new HashSet<>();
 	
 	public CustomerData(Customer customer) {
 		this.customerId = customer.getCustomerId();
 		this.firstName = customer.getFirstName();
 		this.lastName = customer.getLastName();
 		this.email = customer.getEmail();
-		this.petStore = customer.getPetStores();
+		this.petStores = customer.getPetStores();
 		
-		customer.getPetStores().forEach(petStore -> petStores.add(new PetStoreResponse(petStore)));
+		customer.getPetStores().forEach(petStore -> petStoreList.add(new PetStoreResponse(petStore)));
 	}
 	
 	@Data
