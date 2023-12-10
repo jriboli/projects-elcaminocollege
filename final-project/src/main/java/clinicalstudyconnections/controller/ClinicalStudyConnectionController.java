@@ -93,6 +93,10 @@ public class ClinicalStudyConnectionController {
 	@PostMapping("/owner/{ownerId}/site")
 	public SiteData createSite(@PathVariable Long ownerId, @RequestBody SiteData siteData) {
 		log.info("Create Site {}", siteData);
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// NEED TO FIX
+		// THIS SHOULD ASSOCIATED SITE WITH THE OWNER
 		return service.saveSite(ownerId, siteData);
 	}
 	
@@ -100,6 +104,10 @@ public class ClinicalStudyConnectionController {
 	public SiteData updateSite(@PathVariable Long ownerId, @PathVariable Long siteId, @RequestBody SiteData siteData) {
 		siteData.setSiteId(siteId);
 		log.info("Update Site {}", siteData); 
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// THIS FAILS BECUASE THE CREATE DIDNT ASSOCIATE AN OWNER ID
+		// ERROR - "Cannot invoke \"clinicalstudyconnections.entity.Owner.getOwnerId()\" because the return value of \"clinicalstudyconnections.entity.Site.getOwner()\" is null"
 		return service.saveSite(ownerId, siteData);
 	}
 	
@@ -107,6 +115,9 @@ public class ClinicalStudyConnectionController {
 	public Map<String, String> deleteSite(@PathVariable Long ownerId, @PathVariable Long siteId) {
 		log.info("Delete Site with ID={}", siteId);
 		service.deleteSite(ownerId, siteId);
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// SAME AS ABOVE
 		return Map.of("message", String.format("Deleting Site with ID=%s was successful", siteId));
 	}
 	
@@ -142,6 +153,10 @@ public class ClinicalStudyConnectionController {
 	@PostMapping("/owner/{ownerId}/doctor")
 	public DoctorData createDoctor(@PathVariable Long ownerId, @RequestBody DoctorData doctorData) {
 		log.info("Create Doctor {}", doctorData);
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// NEED TO FIX
+		// ERROR - "not-null property references a null or transient value : clinicalstudyconnections.entity.Doctor.owner"
 		return service.saveDoctor(ownerId, doctorData);
 	}
 	
@@ -156,6 +171,11 @@ public class ClinicalStudyConnectionController {
 	public Map<String, String> deleteDoctor(@PathVariable Long ownerId, @PathVariable Long doctorId) {
 		log.info("Delete Doctor with ID={}", doctorId);
 		service.deleteDoctor(ownerId, doctorId);
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------------------------------------------------------------
+		// NEED TO FIX
+		// SHOULD HAVE FAILED WITH INVALID ID
+		// GOT MESSAGE - "Deleting Doctor with ID=2 was successful"
 		return Map.of("message", String.format("Deleting Doctor with ID=%s was successful", doctorId));
 	}
 	

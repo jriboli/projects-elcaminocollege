@@ -5,5 +5,5 @@ public enum StudyStatus {
 	RECRUITING,
 	IN_PROGRESS,
 	COMPLETED,
-	TERMINATED
+	TERMINATED;
 }
