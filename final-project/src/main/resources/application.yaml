@@ -1,0 +1,15 @@
+spring: 
+   datasource:
+      username: pokemon_arena
+      password: pokemon_arena
+      url: jdbc:mysql://localhost:3306/pokemon_arena
+      
+   jpa:
+      hibernate:
+         ddl-auto: create
+      show-sql: true
+      defer-datasource-initialization: true
+    
+   sql:
+      init:
+         mode: always
