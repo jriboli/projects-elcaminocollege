@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -21,6 +23,8 @@ public class Specialty {
 	private String specialtyName;
 	
 	//ManyToMany Site
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToMany(mappedBy = "specialties")
 	private Set<Site> sites = new HashSet<>();
 	

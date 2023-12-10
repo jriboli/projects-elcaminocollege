@@ -31,7 +31,7 @@ public class PetStore {
 	private String state;
 	private String zip;
 	private String phone;
-	
+
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	// MappedBy is like naming it for access in the linked class
@@ -43,6 +43,7 @@ public class PetStore {
 	// -- Note from BreakOut videos:
 	// Yes, the class type matters
 	private Set<Employee> employees = new HashSet<>();
+	// Note: Can use LIST but SET has 'add' and it will add or replace the item. List you have to look up first to find correct item. 
 	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude

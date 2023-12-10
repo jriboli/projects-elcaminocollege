@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -19,11 +21,15 @@ public class Doctor {
 	private String doctorLastName;
 	
 	//ManyToOne
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToOne
 	@JoinColumn(name = "site_id", nullable = true)
 	private Site site;
 	
 	//ManyToOne
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
 	private Owner owner;

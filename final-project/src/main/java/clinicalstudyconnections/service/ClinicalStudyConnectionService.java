@@ -1,46 +1,114 @@
 package clinicalstudyconnections.service;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import clinicalstudyconnections.entity.ClinicalStudy;
+import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Owner;
+import clinicalstudyconnections.entity.Patient;
+import clinicalstudyconnections.entity.Site;
 import clinicalstudyconnections.model.ClinicalStudyData;
 import clinicalstudyconnections.model.DoctorData;
 import clinicalstudyconnections.model.OwnerData;
 import clinicalstudyconnections.model.PatientData;
 import clinicalstudyconnections.model.SiteData;
+import clinicalstudyconnections.repository.ClinicalStudyDBRepository;
+import clinicalstudyconnections.repository.DoctorDBRepository;
+import clinicalstudyconnections.repository.OwnerDBRepository;
+import clinicalstudyconnections.repository.PatientDBRepository;
+import clinicalstudyconnections.repository.SiteDBRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ClinicalStudyConnectionService {
 
+	// TESTING OUT SOME DEPENDENCY INJECTION 
+	//private OwnerRepository ownerRepo;
+	private OwnerDBRepository ownerDbRepo;
+	private SiteDBRepository siteDbRepo;
+	private DoctorDBRepository doctorDbRepo;
+	private ClinicalStudyDBRepository clinicalDbRepo;
+	private PatientDBRepository patientDbRepo;
+	
+	//public ClinicalStudyConnectionService(OwnerRepository ownerRepo) {
+	//	this.ownerRepo = ownerRepo;
+	//}
+	public ClinicalStudyConnectionService(OwnerDBRepository ownerDbRepo, SiteDBRepository siteDbRepo, 
+			DoctorDBRepository doctorDbRepo, PatientDBRepository patientDbRepo, ClinicalStudyDBRepository clinicalDbRepo) {
+		this.ownerDbRepo = ownerDbRepo;
+		this.siteDbRepo = siteDbRepo;
+		this.doctorDbRepo = doctorDbRepo;
+		this.clinicalDbRepo = clinicalDbRepo;
+		this.patientDbRepo = patientDbRepo;
+	}
+	
 	/*
 	 * ---- OWNER --------------------------------------------------
 	 */
 	public List<OwnerData> getAllOwners() {
-		// TODO Auto-generated method stub
-		return null;
+		//List<Owner> owners = ownerRepo.all();
+		List<Owner> owners = ownerDbRepo.findAll();
+		List<OwnerData> ownersResponse = new LinkedList<>();
+		
+		owners.forEach(owner -> ownersResponse.add(new OwnerData(owner)));
+		
+		return ownersResponse;
 	}
 
 	public OwnerData getOwner(Long ownerId) {
 		Owner owner = findOrCreateOwner(ownerId);
-		
-		return null;
+		return new OwnerData(owner);
 	}
 
 	public OwnerData saveOwner(OwnerData ownerData) {
-		// TODO Auto-generated method stub
-		return null;
+		Long ownerId = ownerData.getOwnerId();
+		Owner owner = findOrCreateOwner(ownerId);
+		
+		setFieldsInOwner(owner, ownerData);
+		return new OwnerData(ownerDbRepo.save(owner));
 	}
 
 	public void deleteOwner(Long ownerId) {
-		// TODO Auto-generated method stub
+		// This will find and check if OwnerId is valid, else throw error
+		Owner owner = findOrCreateOwner(ownerId);
 		
+		ownerDbRepo.delete(owner);
 	}
 
 	private Owner findOrCreateOwner(Long ownerId) {
-		// TODO Auto-generated method stub
-		return null;
+		Owner owner;
+		if(Objects.isNull(ownerId)) {
+			owner = new Owner();
+		}
+		else {
+			owner = findOwnerById(ownerId);
+		}
+		
+		return owner;
+	}
+	
+	private Owner findOwnerById(Long ownerId) {
+		//return ownerRepo.get(ownerId).orElseThrow(() -> new NoSuchElementException("No matching Owner Id."));
+		return ownerDbRepo.findById(ownerId).orElseThrow(() -> new NoSuchElementException("No matching Owner Id."));
+	}
+
+	private void setFieldsInOwner(Owner owner, OwnerData ownerData) {
+		owner.setOwnerId(ownerData.getOwnerId());
+		owner.setOwnerFirstName(ownerData.getOwnerFirstName());
+		owner.setOwnerLastName(ownerData.getOwnerLastName());
+		owner.setCompanyName(ownerData.getCompanyName());
+		
+		// Need to Fix
+		//owner.setSites(ownerData.getSites());
+		
+		// Why does Owner have access to Sites
+		//owner.getDoctors();
+		
 	}
 	
 	/*
@@ -48,32 +116,85 @@ public class ClinicalStudyConnectionService {
 	 */
 
 	public List<SiteData> getAllSites(Long ownerId) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Site> sites = siteDbRepo.findAll();
+		List<SiteData> sitesResponse = new LinkedList<>();
+		sites.forEach(site -> sitesResponse.add(new SiteData(site)));
+		return sitesResponse;
 	}
 
 	public SiteData getSiteById(Long ownerId, Long siteId) {
-		// TODO Auto-generated method stub
-		return null;
+		Site site = findOrCreateSite(ownerId, siteId);
+		return new SiteData(site);
 	}
 
-	public SiteData saveSite(SiteData siteData) {
-		// TODO Auto-generated method stub
-		return null;
+	public SiteData saveSite(Long ownerId, SiteData siteData) {
+		Long siteId = siteData.getSiteId();
+		Site site = findOrCreateSite(ownerId, siteId);
+		
+		setFieldsInSite(site, siteData);
+		return new SiteData(siteDbRepo.save(site));
 	}
 
 	public void deleteSite(Long ownerId, Long siteId) {
-		// TODO Auto-generated method stub
+		Site site = findOrCreateSite(ownerId, siteId);
 		
+		siteDbRepo.delete(site);		
 	}
 
 	public void addDoctorToSite(Long ownerId, Long siteId, Long doctorId) {
-		// TODO Auto-generated method stub
+		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
+		Site site = findOrCreateSite(ownerId, siteId);
 		
+		// Might need to Fix this - Or more so test it
+		//siteDbRepo.AddDoctor(site, doctor);		
 	}
 
 	public void deleteDoctorFromSite(Long ownerId, Long siteId, Long doctorId) {
-		// TODO Auto-generated method stub
+		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
+		Site site = findOrCreateSite(ownerId, siteId);
+		
+		// Might need to Fix this - Or more so test it
+		//siteDbRepo.DeleteDoctor(site, doctor);			
+	}
+
+	private Site findOrCreateSite(Long ownerId, Long siteId) {
+		Site site;
+		if(Objects.isNull(siteId)) {
+			site = new Site();
+		}
+		else {
+			site = findSiteById(ownerId, siteId);
+		}
+		
+		return site;
+	}
+
+	private Site findSiteById(Long ownerId, Long siteId) {
+		Site site = siteDbRepo.findById(siteId).orElseThrow(() -> new NoSuchElementException("Site ID does not exist."));
+		
+		if(site.getOwner().getOwnerId() != ownerId) {
+			throw new NoSuchElementException("Site does not exist for Owner.");
+		}
+
+		return site;
+	}
+	
+	private Site basicFindSiteById(Long siteId) {
+		return siteDbRepo.findById(siteId).orElseThrow(() -> new NoSuchElementException("Site ID does not exist."));
+	}
+
+	private void setFieldsInSite(Site site, SiteData siteData) {
+		site.setSiteId(siteData.getSiteId());
+		site.setSiteName(siteData.getSiteName());
+		site.setSiteAddress(siteData.getSiteAddress());
+		site.setSiteCity(siteData.getSiteCity());
+		site.setSiteState(siteData.getSiteState());
+		site.setSiteZip(siteData.getSiteZip());
+		site.setOwner(siteData.getOwner());
+		
+		//Doctor
+		
+		// Specialty
 		
 	}
 	
@@ -82,23 +203,64 @@ public class ClinicalStudyConnectionService {
 	 */
 
 	public List<DoctorData> getAllDoctors(Long ownerId) {
-		// TODO Auto-generated method stub
-		return null;
+		// THIS NEED TO BE MODIFIED TO TAKE THE OWNER ID parameter
+		List<Doctor> doctors = new LinkedList<>();
+		List<DoctorData> doctorsResponse = new LinkedList<>();
+		
+		doctors.forEach(doctor -> doctorsResponse.add(new DoctorData(doctor)));
+		return doctorsResponse;
 	}
 
 	public DoctorData getDoctorById(Long ownerId, Long doctorId) {
-		// TODO Auto-generated method stub
-		return null;
+		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
+		
+		return new DoctorData(doctor);
 	}
 
-	public DoctorData saveDoctor(DoctorData doctorData) {
-		// TODO Auto-generated method stub
-		return null;
+	public DoctorData saveDoctor(Long ownerId, DoctorData doctorData) {
+		Long doctorId = doctorData.getDoctorId();
+		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
+		
+		setFieldsInDoctor(doctor, doctorData);
+		return new DoctorData(doctorDbRepo.save(doctor));
 	}
 
 	public void deleteDoctor(Long ownerId, Long doctorId) {
-		// TODO Auto-generated method stub
+		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		
+		doctorDbRepo.delete(doctor);		
+	}
+
+	private Doctor findOrCreateDoctor(Long ownerId, Long doctorId) {
+		Doctor doctor;
+		if(Objects.isNull(doctorId)) {
+			doctor = new Doctor();
+		}
+		else {
+			doctor = findDoctorById(ownerId, doctorId);
+		}
+		
+		return doctor;
+	}
+
+	private Doctor findDoctorById(Long ownerId, Long doctorId) {
+		Doctor doctor = doctorDbRepo.findById(doctorId).orElseThrow(() -> new NoSuchElementException("No such Doctor exists."));
+		
+		if(doctor.getOwner().getOwnerId() != ownerId) {
+			throw new NoSuchElementException("No Doctor exists for Owner.");
+		}
+		
+		return doctor;
+	}
+
+	private void setFieldsInDoctor(Doctor doctor, DoctorData doctorData) {
+		doctor.setDoctorId(doctorData.getDoctorId());
+		doctor.setDoctorFirstName(doctorData.getDoctorFirstName());
+		doctor.setDoctorLastName(doctorData.getDoctorLastName());
+		
+		// Owner
+		
+		// Sites		
 	}
 	
 	/*
@@ -106,42 +268,103 @@ public class ClinicalStudyConnectionService {
 	 */
 
 	public List<ClinicalStudyData> getAllStudies() {
-		// TODO Auto-generated method stub
-		return null;
+		List<ClinicalStudy> studies = clinicalDbRepo.findAll();
+		List<ClinicalStudyData> studiesResponse = new LinkedList<>();
+		
+		studies.forEach(study -> studiesResponse.add(new ClinicalStudyData(study)));
+		return studiesResponse;
 	}
 
 	public ClinicalStudyData getStudyById(Long studyId) {
-		// TODO Auto-generated method stub
-		return null;
+		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		
+		return new ClinicalStudyData(clinicalStudy);
 	}
 
 	public ClinicalStudyData saveStudy(ClinicalStudyData clinicalStudyData) {
-		// TODO Auto-generated method stub
-		return null;
+		Long clinicalStudyId = clinicalStudyData.getClinicalStudyId();
+		ClinicalStudy clinicalStudy = findOrCreateStudy(clinicalStudyId);
+		
+		setFieldsInStudy(clinicalStudy, clinicalStudyData);
+		return new ClinicalStudyData(clinicalDbRepo.save(clinicalStudy));
 	}
 
 	public void deleteStudy(Long studyId) {
-		// TODO Auto-generated method stub
+		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		
+		clinicalDbRepo.delete(clinicalStudy);		
+	}
+
+	public void enrollSite(Long studyId, Long siteId) {
+		Site site = basicFindSiteById(siteId);
+		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		
+		clinicalStudy.enrollSite(site);
+		clinicalDbRepo.save(clinicalStudy);	
+	}
+
+	public void removeSite(Long studyId, Long siteId) {
+		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		//Site site = basicFindSiteById(siteId);
+		Site site = clinicalStudy.getSites().stream()
+				.filter(s -> s.getSiteId().equals(siteId))
+				.findFirst()
+				.orElseThrow(() -> new EntityNotFoundException("Site not find in the Study"));
+		
+		clinicalStudy.removeSite(site);
+		clinicalDbRepo.save(clinicalStudy);
 		
 	}
 
-	public void addSiteToStudy(Long studyId, Long siteId) {
-		// TODO Auto-generated method stub
+	public void enrollPatient(Long studyId, Long patientId) {
+		Patient patient = findOrCreatePatient(patientId);
+		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		
+		clinicalStudy.enrollPatient(patient);		
+		clinicalDbRepo.save(clinicalStudy);
 		
 	}
 
-	public void addPatientToStudy(Long studyId, Long patientId) {
-		// TODO Auto-generated method stub
+	public void removePatient(Long studyId, Long patientId) {
+		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		//Patient patient = findOrCreatePatient(patientId);
+		Patient patient = clinicalStudy.getPatients().stream()
+				.filter(p -> p.getPatientId().equals(patientId))
+				.findFirst()
+				.orElseThrow(() -> new EntityNotFoundException("Patient not found in the Study"));
+		
+		clinicalStudy.removePatient(patient);
+		clinicalDbRepo.save(clinicalStudy);
 		
 	}
 
-	public void deleteSiteFromStudy(Long studyId, Long siteId) {
-		// TODO Auto-generated method stub
+	private ClinicalStudy findOrCreateStudy(Long studyId) {
+		ClinicalStudy clinicalStudy;
+		if(Objects.isNull(studyId)) {
+			clinicalStudy = new ClinicalStudy();
+		}
+		else {
+			clinicalStudy = findStudyById(studyId);
+		}
 		
+		return clinicalStudy;
 	}
 
-	public void deletePatientFromStudy(Long studyId, Long patientId) {
-		// TODO Auto-generated method stub
+	private ClinicalStudy findStudyById(Long studyId) {
+		return clinicalDbRepo.findById(studyId).orElseThrow(() -> new NoSuchElementException("No such Study exists."));
+	}
+
+	private void setFieldsInStudy(ClinicalStudy clinicalStudy, ClinicalStudyData clinicalStudyData) {
+		clinicalStudy.setClinicalStudyId(clinicalStudyData.getClinicalStudyId());
+		clinicalStudy.setStudyName(clinicalStudyData.getStudyName());
+		clinicalStudy.setStudyDescription(clinicalStudyData.getStudyDescription());
+		clinicalStudy.setStudyStatus(clinicalStudyData.getStudyStatus());
+		
+		// Sites - Why SET but no GET
+		//clinicalStudy.setSites();
+		
+		// Patients
+		//clinicalStudy.setPatients(clinicalStudyData.getPatients());
 		
 	}
 	
@@ -150,23 +373,57 @@ public class ClinicalStudyConnectionService {
 	 */
 
 	public List<PatientData> getAllPatients() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Patient> patients = patientDbRepo.findAll();
+		List<PatientData> patientsResponse = new LinkedList<>();
+		
+		patients.forEach(patient -> patientsResponse.add(new PatientData(patient)));
+		return patientsResponse;
 	}
 
 	public PatientData getPatientById(Long patientId) {
-		// TODO Auto-generated method stub
-		return null;
+		Patient patient = findOrCreatePatient(patientId);
+		
+		return new PatientData(patient);
 	}
 
 	public PatientData savePatient(PatientData patientData) {
-		// TODO Auto-generated method stub
-		return null;
+		Long patientId = patientData.getPatientId();
+		Patient patient = findOrCreatePatient(patientId);
+		
+		setFieldsInPatient(patient, patientData);
+		return new PatientData(patientDbRepo.save(patient));
 	}
 
 	public void deletePatient(Long patientId) {
-		// TODO Auto-generated method stub
+		Patient patient = findOrCreatePatient(patientId);
 		
+		patientDbRepo.delete(patient);		
+	}
+
+	private Patient findOrCreatePatient(Long patientId) {
+		Patient patient;
+		if(Objects.isNull(patientId)) {
+			patient = new Patient();
+		}
+		else {
+			patient = findPatientById(patientId);
+		}
+		
+		return patient;
+	}
+
+	private Patient findPatientById(Long patientId) {
+		return patientDbRepo.findById(patientId).orElseThrow(() -> new NoSuchElementException("No such Patient exists."));
+	}
+
+	private void setFieldsInPatient(Patient patient, PatientData patientData) {
+		patient.setPatientId(patientData.getPatientId());
+		patient.setPatientFirstName(patientData.getPatientFirstName());
+		patient.setPatientLastName(patientData.getPatientLastName());
+		patient.setPatientAge(patientData.getPatientAge());
+		patient.setPatientSex(patientData.getPatientSex());
+		
+		// Studies		
 	}
 
 }

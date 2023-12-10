@@ -14,6 +14,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -30,15 +32,21 @@ public class Site {
 	private String sitePhone;
 	
 	//ManyToOne Owner
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
 	private Owner owner;
 	
 	//OneToMany Doctor
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
 	private Set<Doctor> doctors = new HashSet<>();
 	
 	//ManyToMany Specialty
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToMany
 	@JoinTable(
 			name = "site_specialty",
@@ -47,6 +55,8 @@ public class Site {
 	private Set<Specialty> specialties = new HashSet<>();
 	
 	//ManyToMany Studies
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToMany
 	@JoinTable(
 			name = "site_study",

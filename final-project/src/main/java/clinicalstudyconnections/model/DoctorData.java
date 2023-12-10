@@ -1,5 +1,6 @@
 package clinicalstudyconnections.model;
 
+import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Site;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,4 +12,12 @@ public class DoctorData {
 	private String doctorFirstName;
 	private String doctorLastName;
 	private Site site;
+	
+	public DoctorData(Doctor doctor) {
+		doctorId = doctor.getDoctorId();
+		doctorFirstName = doctor.getDoctorFirstName();
+		doctorLastName = doctor.getDoctorLastName();
+		
+		// Dont need Site - Right ???
+	}
 }
