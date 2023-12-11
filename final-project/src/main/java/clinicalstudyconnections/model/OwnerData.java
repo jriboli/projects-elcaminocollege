@@ -3,6 +3,9 @@ package clinicalstudyconnections.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Owner;
 import clinicalstudyconnections.entity.Site;
 import lombok.Data;
@@ -15,7 +18,12 @@ public class OwnerData {
 	private String ownerFirstName;
 	private String ownerLastName;
 	private String companyName;
-	private Set<SiteResponse> sites = new HashSet<>();
+	@JsonIgnore
+	private Set<Site> sites = new HashSet<>();
+	private Set<SiteResponse> sitesResponse = new HashSet<>();
+	@JsonIgnore
+	private Set<Doctor> doctors = new HashSet<>();
+	private Set<DoctorResponse> doctorsResponse = new HashSet<>();
 	
 	public OwnerData(Owner owner) {
 		this.ownerId = owner.getOwnerId();
@@ -23,7 +31,8 @@ public class OwnerData {
 		this.ownerLastName = owner.getOwnerLastName();
 		this.companyName = owner.getCompanyName();
 		
-		owner.getSites().forEach(site -> sites.add(new SiteResponse(site)));
+		owner.getSites().forEach(site -> sitesResponse.add(new SiteResponse(site)));
+		owner.getDoctors().forEach(doctor -> doctorsResponse.add(new DoctorResponse(doctor)));
 	}
 	
 	// This should help with the Infinite Recursion error 
@@ -46,6 +55,20 @@ public class OwnerData {
 			siteState = site.getSiteState();
 			siteZip = site.getSiteZip();
 			sitePhone = site.getSitePhone();
+		}
+	}
+	
+	@Data
+	@NoArgsConstructor
+	static class DoctorResponse {
+		private Long doctorId;
+		private String doctorFirstName;
+		private String doctorLastName;
+		
+		public DoctorResponse(Doctor doctor) {
+			doctorId = doctor.getDoctorId();
+			doctorFirstName = doctor.getDoctorFirstName();
+			doctorLastName = doctor.getDoctorLastName();
 		}
 	}
 }

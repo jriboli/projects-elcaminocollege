@@ -3,6 +3,8 @@ package clinicalstudyconnections.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Owner;
 import clinicalstudyconnections.entity.Site;
@@ -20,9 +22,15 @@ public class SiteData {
 	private String siteState;
 	private String siteZip;
 	private String sitePhone;
+	@JsonIgnore
 	private Owner owner;
-	private Set<Doctor> doctors = new HashSet<>();	
+	private OwnerResponse ownerResponse;
+	@JsonIgnore
+	private Set<Doctor> doctors = new HashSet<>();
+	private Set<DoctorResponse> doctorsResponse = new HashSet<>();
+	@JsonIgnore
 	private Set<Specialty> specialties = new HashSet<>();
+	private Set<SpecialtyResponse> specialtiesResponse = new HashSet<>();
 	
 	public SiteData(Site site) {
 		siteId = site.getSiteId();
@@ -33,6 +41,14 @@ public class SiteData {
 		siteZip = site.getSiteZip();
 		sitePhone = site.getSitePhone();
 		
+		owner = site.getOwner();
+		ownerResponse = new OwnerResponse(site.getOwner());
+		
+		doctors = site.getDoctors();
+		site.getDoctors().forEach(doctor -> doctorsResponse.add(new DoctorResponse(doctor)));
+		
+		specialties = site.getSpecialties();
+		site.getSpecialties().forEach(specialty -> specialtiesResponse.add(new SpecialtyResponse(specialty)));
 	}
 	
 	@Data

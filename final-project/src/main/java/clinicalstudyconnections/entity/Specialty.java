@@ -30,6 +30,8 @@ public class Specialty {
 	
 	//OneToOne Clinical Study
 	// FIX THIS ------------------------------------------------
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@OneToOne(mappedBy = "specialty")
 	private ClinicalStudy clinicalStudy;
 }

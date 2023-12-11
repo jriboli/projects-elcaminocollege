@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -103,11 +104,12 @@ public class ClinicalStudyConnectionService {
 		owner.setOwnerLastName(ownerData.getOwnerLastName());
 		owner.setCompanyName(ownerData.getCompanyName());
 		
-		// Need to Fix
-		//owner.setSites(ownerData.getSites());
+		// Need to Fix - DONE
+		owner.setSites(ownerData.getSites());
 		
-		// Why does Owner have access to Sites
-		//owner.getDoctors();
+		// Why does Owner have access to Sites - DONE
+		// Fix - By Design
+		owner.setDoctors(ownerData.getDoctors());
 		
 	}
 	
@@ -151,16 +153,16 @@ public class ClinicalStudyConnectionService {
 		// Might need to Fix this - Or more so test it - DONE
 		site.enrollDoctor(doctor);
 		siteDbRepo.save(site);
-		
-		// Should return something 
 	}
 
 	public void deleteDoctorFromSite(Long ownerId, Long siteId, Long doctorId) {
 		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		Site site = findOrCreateSite(ownerId, siteId);
 		
-		// Might need to Fix this - Or more so test it
-		//siteDbRepo.DeleteDoctor(site, doctor);			
+		// Might need to Fix this - Or more so test it - DONE
+		//siteDbRepo.DeleteDoctor(site, doctor);
+		site.removeDoctor(doctor);
+		siteDbRepo.save(site);
 	}
 
 	private Site findOrCreateSite(Long ownerId, Long siteId) {
@@ -435,7 +437,8 @@ public class ClinicalStudyConnectionService {
 		patient.setPatientAge(patientData.getPatientAge());
 		patient.setPatientSex(patientData.getPatientSex());
 		
-		// Studies		
+		// Studies	
+		patient.setClinicalStudies(patientData.getClincialStudies());
 	}
 
 }

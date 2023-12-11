@@ -41,7 +41,7 @@ public class Site {
 	//OneToMany Doctor
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "site")
 	private Set<Doctor> doctors = new HashSet<>();
 	
 	public void enrollDoctor(Doctor doctor) {

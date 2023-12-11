@@ -3,6 +3,8 @@ package clinicalstudyconnections.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import clinicalstudyconnections.entity.ClinicalStudy;
 import clinicalstudyconnections.entity.Site;
 import clinicalstudyconnections.entity.Specialty;
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class SpecialtyData {
 	private Long specialtyId;
 	private String specialtyName;
+	@JsonIgnore
 	private Set<Site> sites = new HashSet<>();
 	private ClinicalStudy clinicalStudy;
 	

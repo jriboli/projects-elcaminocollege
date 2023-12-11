@@ -28,6 +28,8 @@ public class ClinicalStudy {
 	private StudyStatus studyStatus;
 	
 	//OneToOne Specialty
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@OneToOne
 	@JoinColumn(name = "specialty_id")
 	private Specialty specialty;
