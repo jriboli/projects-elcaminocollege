@@ -197,7 +197,7 @@ public class ClinicalStudyConnectionController {
 		return service.getAllStudies();
 	}
 	
-	@GetMapping("/study{studyId}")
+	@GetMapping("/study/{studyId}")
 	public ClinicalStudyData getStudyById(@PathVariable Long studyId) {
 		log.info("Grab Clinical Study with ID={}", studyId);
 		return service.getStudyById(studyId);

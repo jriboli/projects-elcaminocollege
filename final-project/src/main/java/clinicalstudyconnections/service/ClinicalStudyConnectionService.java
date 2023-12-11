@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -13,6 +12,7 @@ import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Owner;
 import clinicalstudyconnections.entity.Patient;
 import clinicalstudyconnections.entity.Site;
+import clinicalstudyconnections.entity.Specialty;
 import clinicalstudyconnections.model.ClinicalStudyData;
 import clinicalstudyconnections.model.DoctorData;
 import clinicalstudyconnections.model.OwnerData;
@@ -23,6 +23,7 @@ import clinicalstudyconnections.repository.DoctorDBRepository;
 import clinicalstudyconnections.repository.OwnerDBRepository;
 import clinicalstudyconnections.repository.PatientDBRepository;
 import clinicalstudyconnections.repository.SiteDBRepository;
+import clinicalstudyconnections.repository.SpecialtyDBRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -35,17 +36,20 @@ public class ClinicalStudyConnectionService {
 	private DoctorDBRepository doctorDbRepo;
 	private ClinicalStudyDBRepository clinicalDbRepo;
 	private PatientDBRepository patientDbRepo;
+	private SpecialtyDBRepository specialtyDbRepo;
 	
 	//public ClinicalStudyConnectionService(OwnerRepository ownerRepo) {
 	//	this.ownerRepo = ownerRepo;
 	//}
 	public ClinicalStudyConnectionService(OwnerDBRepository ownerDbRepo, SiteDBRepository siteDbRepo, 
-			DoctorDBRepository doctorDbRepo, PatientDBRepository patientDbRepo, ClinicalStudyDBRepository clinicalDbRepo) {
+			DoctorDBRepository doctorDbRepo, PatientDBRepository patientDbRepo, 
+			ClinicalStudyDBRepository clinicalDbRepo, SpecialtyDBRepository specialtyDbRepo) {
 		this.ownerDbRepo = ownerDbRepo;
 		this.siteDbRepo = siteDbRepo;
 		this.doctorDbRepo = doctorDbRepo;
 		this.clinicalDbRepo = clinicalDbRepo;
 		this.patientDbRepo = patientDbRepo;
+		this.specialtyDbRepo = specialtyDbRepo;
 	}
 	
 	/*
@@ -299,6 +303,9 @@ public class ClinicalStudyConnectionService {
 		Long clinicalStudyId = clinicalStudyData.getClinicalStudyId();
 		ClinicalStudy clinicalStudy = findOrCreateStudy(clinicalStudyId);
 		
+		// This will need to be updated later
+		//Specialty specialty = specialtyDbRepo.findById(clinicalStudy.getSpecialty().getSpecialtyId()).orElse(null);
+		
 		setFieldsInStudy(clinicalStudy, clinicalStudyData);
 		return new ClinicalStudyData(clinicalDbRepo.save(clinicalStudy));
 	}
@@ -373,6 +380,7 @@ public class ClinicalStudyConnectionService {
 		clinicalStudy.setStudyName(clinicalStudyData.getStudyName());
 		clinicalStudy.setStudyDescription(clinicalStudyData.getStudyDescription());
 		clinicalStudy.setStudyStatus(clinicalStudyData.getStudyStatus());
+		clinicalStudy.setSpecialty(clinicalStudyData.getSpecialty());
 		
 		// Sites - Why SET but no GET
 		//clinicalStudy.setSites();

@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,7 +30,7 @@ public class ClinicalStudy {
 	//OneToOne Specialty
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "specialty_id")
 	private Specialty specialty;
 	
