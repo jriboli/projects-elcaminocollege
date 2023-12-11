@@ -297,6 +297,26 @@ public class ClinicalStudyConnectionService {
 		studies.forEach(study -> studiesResponse.add(new ClinicalStudyData(study)));
 		return studiesResponse;
 	}
+	
+	public List<ClinicalStudyData> getStudiesBySpecialty(String specialty) {
+		List<Specialty> existingSpecialties = specialtyDbRepo.findAll();
+		
+		Specialty selectedSpecialty = existingSpecialties.stream()
+				.filter(s -> s.getSpecialtyName().equals(specialty))
+				.findFirst()
+				.orElse(null);
+		
+		if(Objects.isNull(selectedSpecialty)) {
+			throw new NoSuchElementException("There is not matching specialty for - " + specialty);
+		}
+		// Can try IllegalArgumentException
+		
+		List<ClinicalStudy> studies = clinicalDbRepo.findBySpecialty(selectedSpecialty);
+		List<ClinicalStudyData> studiesResponse = new LinkedList<>();
+		
+		studies.forEach(study -> studiesResponse.add(new ClinicalStudyData(study)));
+		return studiesResponse;
+	}
 
 	public ClinicalStudyData getStudyById(Long studyId) {
 		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);

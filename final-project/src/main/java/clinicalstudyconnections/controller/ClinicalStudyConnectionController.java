@@ -2,6 +2,7 @@ package clinicalstudyconnections.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -112,8 +114,6 @@ public class ClinicalStudyConnectionController {
 	public SiteData updateSite(@PathVariable Long ownerId, @PathVariable Long siteId, @RequestBody SiteData siteData) {
 		siteData.setSiteId(siteId);
 		log.info("Update Site {}", siteData); 
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
 		// THIS FAILS BECUASE THE CREATE DIDNT ASSOCIATE AN OWNER ID - DONE
 		// ERROR - "Cannot invoke \"clinicalstudyconnections.entity.Owner.getOwnerId()\" because the return value of \"clinicalstudyconnections.entity.Site.getOwner()\" is null"
 		// Fix - Was fixed with above fix for createSite();
@@ -124,9 +124,7 @@ public class ClinicalStudyConnectionController {
 	public Map<String, String> deleteSite(@PathVariable Long ownerId, @PathVariable Long siteId) {
 		log.info("Delete Site with ID={}", siteId);
 		service.deleteSite(ownerId, siteId);
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// SAME AS ABOVE
+		// SAME AS ABOVE - DONE
 		// Fix - Was fixed with above fix for createSite();
 		return Map.of("message", String.format("Deleting Site with ID=%s was successful", siteId));
 	}
@@ -168,8 +166,6 @@ public class ClinicalStudyConnectionController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public DoctorData createDoctor(@PathVariable Long ownerId, @RequestBody DoctorData doctorData) {
 		log.info("Create Doctor {}", doctorData);
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
 		// NEED TO FIX - DONE
 		// ERROR - "not-null property references a null or transient value : clinicalstudyconnections.entity.Doctor.owner"
 		// Fix - Added code in Service to find OwnerById and add to Doctor Obj before saving. 
@@ -187,8 +183,6 @@ public class ClinicalStudyConnectionController {
 	public Map<String, String> deleteDoctor(@PathVariable Long ownerId, @PathVariable Long doctorId) {
 		log.info("Delete Doctor with ID={}", doctorId);
 		service.deleteDoctor(ownerId, doctorId);
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
 		// NEED TO FIX - DONE
 		// SHOULD HAVE FAILED WITH INVALID ID, GOT MESSAGE - "Deleting Doctor with ID=2 was successful"
 		// Fix - Not a real issue, User Error
@@ -199,10 +193,16 @@ public class ClinicalStudyConnectionController {
 	 * ---- CLINICAL STUDY --------------------------------------------------------------------
 	 */
 	
+	// Adding a filter parameter when searching all Studies
 	@GetMapping("/study")
-	public List<ClinicalStudyData> getAllStudies() {
+	public List<ClinicalStudyData> getAllStudies(@RequestParam String specialty) {
 		log.info("Grabbing all Studies");
-		return service.getAllStudies();
+		if(Objects.isNull(specialty)) {
+			return service.getAllStudies();
+		}
+		else {
+			return service.getStudiesBySpecialty(specialty);
+		}
 	}
 	
 	@GetMapping("/study/{studyId}")
@@ -215,10 +215,9 @@ public class ClinicalStudyConnectionController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public ClinicalStudyData createStudy(@RequestBody ClinicalStudyData clinicalStudyData) {
 		log.info("Create Clinical Study {}", clinicalStudyData);
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// NEED TO FIX
+		// NEED TO FIX - DONE
 		// ERROR - "Type definition error: [simple type, class clinicalstudyconnections.model.ClinicalStudyData]"
+		// Fix - Needed to update the ClinicalStudyData class 
 		return service.saveStudy(clinicalStudyData);
 	}
 	
@@ -240,11 +239,10 @@ public class ClinicalStudyConnectionController {
 	@PostMapping("/study/{studyId}/site/{siteId}")
 	public Map<String, String> enrollSite(@PathVariable Long studyId, @PathVariable Long siteId) {
 		log.info("Adding Site with ID={} to Study with ID={}", studyId, siteId);
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// NEED TO FIX
+		// NEED TO FIX - DONE
 		// INFINITE LOOP
 		// ERROR - "Handler dispatch failed: java.lang.StackOverflowError"
+		// Fixed - forgot to document how --- tisk tisk 
 		service.enrollSite(studyId, siteId);
 		
 		return Map.of("message", "Site was successfully associated with Site");
