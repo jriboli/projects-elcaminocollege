@@ -1,6 +1,7 @@
 package clinicalstudyconnections.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -44,7 +45,9 @@ public class Owner {
 		this.ownerFirstName = firstName;
 		this.ownerLastName = lastName;
 		this.companyName = company;
-		this.sites = sites;
+		if(!Objects.isNull(sites)) {
+			this.sites = sites;
+		}
 	}
 	
 	public Owner() {

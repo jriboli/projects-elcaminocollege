@@ -125,6 +125,11 @@ public class ClinicalStudyConnectionService {
 		//List<Site> sites = siteDbRepo.findAll();
 		List<Site> sites = siteDbRepo.findSitesByOwner_OwnerId(ownerId);
 		List<SiteData> sitesResponse = new LinkedList<>();
+		// Want to throw a custom response if no Sites setup
+		if(sites.isEmpty()) {
+			throw new NoSuchElementException("No sites setup yet. Look into setting up sites.");
+		}
+		
 		sites.forEach(site -> sitesResponse.add(new SiteData(site)));
 		return sitesResponse;
 	}

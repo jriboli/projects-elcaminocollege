@@ -18,7 +18,7 @@ public class SpecialtyData {
 	private String specialtyName;
 	@JsonIgnore
 	private Set<Site> sites = new HashSet<>();
-	private ClinicalStudy clinicalStudy;
+	private Set<ClinicalStudy> clinicalStudies = new HashSet<>();
 	
 	public SpecialtyData(Specialty specialty) {
 		specialtyId = specialty.getSpecialtyId();

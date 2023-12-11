@@ -1,6 +1,7 @@
 package clinicalstudyconnections.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,8 +32,15 @@ public class OwnerData {
 		this.ownerLastName = owner.getOwnerLastName();
 		this.companyName = owner.getCompanyName();
 		
-		owner.getSites().forEach(site -> sitesResponse.add(new SiteResponse(site)));
-		owner.getDoctors().forEach(doctor -> doctorsResponse.add(new DoctorResponse(doctor)));
+		boolean hasSites = sites.isEmpty();
+		if(hasSites) {
+			owner.getSites().forEach(site -> sitesResponse.add(new SiteResponse(site)));
+		}
+		
+		boolean hasDoctors = doctors.isEmpty();
+		if(hasDoctors) {
+			owner.getDoctors().forEach(doctor -> doctorsResponse.add(new DoctorResponse(doctor)));
+		}
 	}
 	
 	// This should help with the Infinite Recursion error 

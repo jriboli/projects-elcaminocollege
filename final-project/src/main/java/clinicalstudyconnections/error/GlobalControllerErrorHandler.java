@@ -2,6 +2,7 @@ package clinicalstudyconnections.error;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,23 @@ public class GlobalControllerErrorHandler {
 		private int statusCode;
 		private String timestamp;
 		private String uri; 
+	}
+	@ExceptionHandler(EntityNotFoundException.class)
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public ExceptionMessage handleEntityNotFoundException(EntityNotFoundException ex, WebRequest webRequest) {
+		return buildExceptionMessage(ex, HttpStatus.NOT_FOUND, webRequest, LogStatus.MESSAGE_ONLY);
+	}
+	
+	@ExceptionHandler(NoSuchElementException.class)
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public ExceptionMessage handleNoSuchElementException(NoSuchElementException ex, WebRequest webRequest) {
+		return buildExceptionMessage(ex, HttpStatus.NOT_FOUND, webRequest, LogStatus.MESSAGE_ONLY);
+	}
+	
+	@ExceptionHandler(UnsupportedOperationException.class)
+	@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
+	public ExceptionMessage handleUnsupportedOperationException(UnsupportedOperationException ex, WebRequest webRequest) {
+		return buildExceptionMessage(ex, HttpStatus.METHOD_NOT_ALLOWED, webRequest, LogStatus.MESSAGE_ONLY);
 	}
 	
 	@ExceptionHandler(Exception.class)

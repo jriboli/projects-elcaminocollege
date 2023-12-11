@@ -3,6 +3,7 @@ package clinicalstudyconnections.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import clinicalstudyconnections.model.ClinicalStudyData;
@@ -48,6 +50,7 @@ public class ClinicalStudyConnectionController {
 	}
 	
 	@PostMapping("/owner")
+	@ResponseStatus(code = HttpStatus.CREATED)
 	public OwnerData createOwner(@RequestBody OwnerData ownerData) {
 		log.info("Create owner {}", ownerData);
 		return service.saveOwner(ownerData);
@@ -60,11 +63,14 @@ public class ClinicalStudyConnectionController {
 		return service.saveOwner(ownerData);
 	}
 	
-	//We have this just to show an Error - Not Allowed
+	// We have this just to show an Error - Not Allowed
+	// Return HTTP Code 405 
 	@DeleteMapping("/owner")
+	// Not Needed - handled in GlobalError class
+	//@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
 	public Map<String, String> deleteAllOwners() {
 		log.info("Trying to delete all Owners");
-		return Map.of("message", "Invalid method, can not delete all Owners");
+		throw new UnsupportedOperationException("Deleting all contributors is not allowed.");
 	}
 	
 	@DeleteMapping("/owner/{ownerId}")
@@ -81,6 +87,8 @@ public class ClinicalStudyConnectionController {
 	@GetMapping("/owner/{ownerId}/site")
 	public List<SiteData> getAllSitesForOwner(@PathVariable Long ownerId) {
 		log.info("Grabbing all sites for Owner ID={}", ownerId);
+		// NICE TO HAVE 
+		// Return message no sites setup yet. Please add through API call
 		return service.getAllSites(ownerId);
 	}
 	
@@ -91,10 +99,9 @@ public class ClinicalStudyConnectionController {
 	}
 	
 	@PostMapping("/owner/{ownerId}/site")
+	@ResponseStatus(code = HttpStatus.CREATED)
 	public SiteData createSite(@PathVariable Long ownerId, @RequestBody SiteData siteData) {
 		log.info("Create Site {}", siteData);
-		// ---------------------------------------------------------------------------------------------------------------------------------------
-		// ---------------------------------------------------------------------------------------------------------------------------------------
 		// NEED TO FIX - DONE
 		// THIS SHOULD ASSOCIATED SITE WITH THE OWNER
 		// Fix - Added code in Service to find OwnerById and add to Site Obj before saving. 
@@ -158,6 +165,7 @@ public class ClinicalStudyConnectionController {
 	}
 	
 	@PostMapping("/owner/{ownerId}/doctor")
+	@ResponseStatus(code = HttpStatus.CREATED)
 	public DoctorData createDoctor(@PathVariable Long ownerId, @RequestBody DoctorData doctorData) {
 		log.info("Create Doctor {}", doctorData);
 		// ---------------------------------------------------------------------------------------------------------------------------------------
@@ -204,6 +212,7 @@ public class ClinicalStudyConnectionController {
 	}
 	
 	@PostMapping("/study")
+	@ResponseStatus(code = HttpStatus.CREATED)
 	public ClinicalStudyData createStudy(@RequestBody ClinicalStudyData clinicalStudyData) {
 		log.info("Create Clinical Study {}", clinicalStudyData);
 		// ---------------------------------------------------------------------------------------------------------------------------------------
@@ -274,6 +283,7 @@ public class ClinicalStudyConnectionController {
 	}
 	
 	@PostMapping("/patient")
+	@ResponseStatus(code = HttpStatus.CREATED)
 	public PatientData createPatient(@RequestBody PatientData patientData) {
 		log.info("Create Patient {}", patientData);
 		return service.savePatient(patientData);

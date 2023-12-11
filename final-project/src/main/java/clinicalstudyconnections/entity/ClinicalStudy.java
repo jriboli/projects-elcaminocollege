@@ -27,7 +27,7 @@ public class ClinicalStudy {
 	private String studyDescription;
 	private StudyStatus studyStatus;
 	
-	//OneToOne Specialty
+	//ManyToOne Specialty
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@ManyToOne
