@@ -35,7 +35,7 @@ public class Site {
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@ManyToOne
-	@JoinColumn(name = "owner_id")
+	@JoinColumn(name = "owner_id", nullable = false)
 	private Owner owner;
 	
 	//OneToMany Doctor
@@ -43,6 +43,16 @@ public class Site {
 	@ToString.Exclude
 	@OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
 	private Set<Doctor> doctors = new HashSet<>();
+	
+	public void enrollDoctor(Doctor doctor) {
+		doctors.add(doctor);
+		doctor.setSite(this);
+	}
+	
+	public void removeDoctor(Doctor doctor) {
+		doctors.remove(doctor);
+		doctor.setSite(null);
+	}
 	
 	//ManyToMany Specialty
 	@EqualsAndHashCode.Exclude

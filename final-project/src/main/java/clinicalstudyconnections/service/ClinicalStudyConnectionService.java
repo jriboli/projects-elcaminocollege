@@ -116,7 +116,8 @@ public class ClinicalStudyConnectionService {
 	 */
 
 	public List<SiteData> getAllSites(Long ownerId) {
-		List<Site> sites = siteDbRepo.findAll();
+		//List<Site> sites = siteDbRepo.findAll();
+		List<Site> sites = siteDbRepo.findSitesByOwner_OwnerId(ownerId);
 		List<SiteData> sitesResponse = new LinkedList<>();
 		sites.forEach(site -> sitesResponse.add(new SiteData(site)));
 		return sitesResponse;
@@ -128,10 +129,12 @@ public class ClinicalStudyConnectionService {
 	}
 
 	public SiteData saveSite(Long ownerId, SiteData siteData) {
+		Owner owner = findOrCreateOwner(ownerId);
 		Long siteId = siteData.getSiteId();
 		Site site = findOrCreateSite(ownerId, siteId);
 		
 		setFieldsInSite(site, siteData);
+		site.setOwner(owner);
 		return new SiteData(siteDbRepo.save(site));
 	}
 
@@ -145,8 +148,11 @@ public class ClinicalStudyConnectionService {
 		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		Site site = findOrCreateSite(ownerId, siteId);
 		
-		// Might need to Fix this - Or more so test it
-		//siteDbRepo.AddDoctor(site, doctor);		
+		// Might need to Fix this - Or more so test it - DONE
+		site.enrollDoctor(doctor);
+		siteDbRepo.save(site);
+		
+		// Should return something 
 	}
 
 	public void deleteDoctorFromSite(Long ownerId, Long siteId, Long doctorId) {
@@ -190,7 +196,10 @@ public class ClinicalStudyConnectionService {
 		site.setSiteCity(siteData.getSiteCity());
 		site.setSiteState(siteData.getSiteState());
 		site.setSiteZip(siteData.getSiteZip());
-		site.setOwner(siteData.getOwner());
+		// SITE PHONE NOT BEING RECORDED - FIXED - DONE
+		site.setSitePhone(siteData.getSitePhone());
+		
+		//site.setOwner(siteData.getOwner());
 		
 		//Doctor
 		
@@ -203,8 +212,9 @@ public class ClinicalStudyConnectionService {
 	 */
 
 	public List<DoctorData> getAllDoctors(Long ownerId) {
-		// THIS NEED TO BE MODIFIED TO TAKE THE OWNER ID parameter
-		List<Doctor> doctors = new LinkedList<>();
+		// THIS NEED TO BE MODIFIED TO TAKE THE OWNER ID parameter - DONE
+		//List<Doctor> doctors = doctorDbRepo.findAll();
+		List<Doctor> doctors = doctorDbRepo.findDoctorsByOwner_OwnerId(ownerId);
 		List<DoctorData> doctorsResponse = new LinkedList<>();
 		
 		doctors.forEach(doctor -> doctorsResponse.add(new DoctorData(doctor)));
@@ -218,10 +228,12 @@ public class ClinicalStudyConnectionService {
 	}
 
 	public DoctorData saveDoctor(Long ownerId, DoctorData doctorData) {
+		Owner owner = findOrCreateOwner(ownerId);
 		Long doctorId = doctorData.getDoctorId();
 		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		
 		setFieldsInDoctor(doctor, doctorData);
+		doctor.setOwner(owner);
 		return new DoctorData(doctorDbRepo.save(doctor));
 	}
 

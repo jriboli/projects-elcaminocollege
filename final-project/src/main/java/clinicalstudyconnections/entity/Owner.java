@@ -3,6 +3,7 @@ package clinicalstudyconnections.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,13 +29,13 @@ public class Owner {
 	//So it does help some... Need to understand more - INVESTIGATE
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private Set<Site> sites = new HashSet<>();
 	
 	//OneToMany Doctors
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private Set<Doctor> doctors = new HashSet<>();
 	
 	//FOR TESTING ONLY
