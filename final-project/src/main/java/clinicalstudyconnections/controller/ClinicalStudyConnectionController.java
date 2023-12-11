@@ -238,7 +238,7 @@ public class ClinicalStudyConnectionController {
 	
 	// Adding Site to Study
 	@PostMapping("/study/{studyId}/site/{siteId}")
-	public void enrollSite(@PathVariable Long studyId, @PathVariable Long siteId) {
+	public Map<String, String> enrollSite(@PathVariable Long studyId, @PathVariable Long siteId) {
 		log.info("Adding Site with ID={} to Study with ID={}", studyId, siteId);
 		// ---------------------------------------------------------------------------------------------------------------------------------------
 		// ---------------------------------------------------------------------------------------------------------------------------------------
@@ -246,24 +246,32 @@ public class ClinicalStudyConnectionController {
 		// INFINITE LOOP
 		// ERROR - "Handler dispatch failed: java.lang.StackOverflowError"
 		service.enrollSite(studyId, siteId);
+		
+		return Map.of("message", "Site was successfully associated with Site");
 	}
 	
 	@DeleteMapping("/study/{studyId}/site/{siteId}")
-	public void removeSite(@PathVariable Long studyId, @PathVariable Long siteId) {
+	public Map<String, String> removeSite(@PathVariable Long studyId, @PathVariable Long siteId) {
 		log.info("Deleting Site with ID={} to Study with ID={}", studyId, siteId);
 		service.removeSite(studyId, siteId);
+		
+		return Map.of("message", "Site was successfully removed from Site");
 	}
 	
 	@PostMapping("/study/{studyId}/patient/{patientId}")
-	public void enrollPatient(@PathVariable Long studyId, @PathVariable Long patientId) {
+	public Map<String, String> enrollPatient(@PathVariable Long studyId, @PathVariable Long patientId) {
 		log.info("Adding Patient with ID={} to Study with ID={}", studyId, patientId);
 		service.enrollPatient(studyId, patientId);
+		
+		return Map.of("message", "Patient was successfully enrolled with Site");
 	}
 	
 	@DeleteMapping("/study/{studyId}/patient/{patientId}")
-	public void removePatient(@PathVariable Long studyId, @PathVariable Long patientId) {
+	public Map<String, String> removePatient(@PathVariable Long studyId, @PathVariable Long patientId) {
 		log.info("Deleting Patient with ID={} to Study with ID={}", studyId, patientId);
 		service.removePatient(studyId, patientId);
+		
+		return Map.of("message", "Site was successfully removed from Site");
 	}
 	
 	/*
