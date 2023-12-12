@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
@@ -92,10 +93,19 @@ public class ClinicalStudy {
 	 * --- BEGINNGING of EXPERIMENTATION 002 -----------------------------------------------------------------
 	 */
 	
+	// More Knowledge: 
+	// The mappedBy attribute is used to declare the owning side of the relationship. In this case, it's declared on the Study entity. 
+	// It specifies that the Study entity is not the owner of the relationship, and the patients set is mapped by the study property 
+	// in the Patient entity.	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany(mappedBy = "clinicalStudies", cascade = CascadeType.ALL)
-	private Set<Patient> patients;
+	@ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(
+        name = "study_patient",
+        joinColumns = @JoinColumn(name = "study_id"),
+        inverseJoinColumns = @JoinColumn(name = "patient_id")
+    )
+    private Set<Patient> patients = new HashSet<>();
 	
 	public void removePatient(Patient patient) {
 		patients.remove(patient);

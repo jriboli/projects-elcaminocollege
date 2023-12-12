@@ -152,6 +152,12 @@ public class ClinicalStudyConnectionService {
 	public void deleteSite(Long ownerId, Long siteId) {
 		Site site = findOrCreateSite(ownerId, siteId);
 		
+		// Remove Doctors
+		site.getDoctors().forEach(doctor -> deleteDoctorFromSite(ownerId, siteId, doctor.getDoctorId()));
+		
+		// Refresh Site - no longer have doctors
+		site = findOrCreateSite(ownerId, siteId);
+		
 		siteDbRepo.delete(site);		
 	}
 
@@ -337,6 +343,19 @@ public class ClinicalStudyConnectionService {
 
 	public void deleteStudy(Long studyId) {
 		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
+		
+		// Removing Patients
+		if(!clinicalStudy.getPatients().isEmpty()) {
+			clinicalStudy.getPatients().forEach(patient -> removePatient(studyId, patient.getPatientId()));
+		}
+		
+		// Removing Sites
+		if(!clinicalStudy.getSites().isEmpty()) {
+			clinicalStudy.getSites().forEach(site -> removeSite(studyId, site.getSiteId()));
+		}
+		
+		//Refresh Site info and Patients and Sites should be removed
+		clinicalStudy = findOrCreateStudy(studyId);
 		
 		clinicalDbRepo.delete(clinicalStudy);		
 	}

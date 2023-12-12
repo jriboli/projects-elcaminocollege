@@ -31,6 +31,7 @@ public class Specialty {
 	//OneToOne Clinical Study
 	// FIX THIS ------------------------------------------------
 	// Dont need any of this - WHY ???
+	// Answer: Because Specialty does not link back to Study
 	//@EqualsAndHashCode.Exclude
 	//@ToString.Exclude
 	//@OneToOne(mappedBy = "specialty")

@@ -57,7 +57,7 @@ public class Site {
 	//ManyToMany Specialty
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(
 			name = "site_specialty",
 			joinColumns = @JoinColumn(name = "site_id"),
@@ -67,7 +67,7 @@ public class Site {
 	//ManyToMany Studies
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(
 			name = "site_study",
 			joinColumns = @JoinColumn(name = "site_id"),

@@ -143,7 +143,9 @@ public class Application {
 		PatientData patientObj = gson.fromJson(createPatientResponse, PatientData.class);
 		System.out.println("New Patient ID is : " + patientObj.getPatientId());
 		
+		// ----------------------------------------------------------------------------------------
 		// Enroll Patient for Study
+		// ----------------------------------------------------------------------------------------
 		String enrollPatient4StudyBody = "";
 		String enrollPatient4StudyUrl = "http://localhost:8080/clinical-study-connection/study/"+studyObj.getClinicalStudyId()+"/patient/"+patientObj.getPatientId();
 		

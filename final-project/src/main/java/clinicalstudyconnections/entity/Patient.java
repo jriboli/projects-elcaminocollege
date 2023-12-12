@@ -1,5 +1,6 @@
 package clinicalstudyconnections.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import clinicalstudyconnections.enums.PatientSex;
@@ -54,13 +55,14 @@ public class Patient {
 	 * --- BEGINNGING of EXPERIMENTATION 002 -----------------------------------------------------------------
 	 */
 	
+	// More Knowledge: 
+	// The mappedBy attribute is used to declare the owning side of the relationship. In this case, it's declared on the Study entity. 
+	// It specifies that the Study entity is not the owner of the relationship, and the patients set is mapped by the study property 
+	// in the Patient entity.
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	@ManyToMany
-	@JoinTable( name = "study_patient", 
-		joinColumns = @JoinColumn(name = "patient_id"), 
-		inverseJoinColumns = @JoinColumn(name = "study_id"))
-	private Set<ClinicalStudy> clinicalStudies;
+	@ManyToMany(mappedBy = "patients")
+    private Set<ClinicalStudy> clinicalStudies = new HashSet<>();
 	
 	/*
 	 * --- END of EXPERIMENTATION 002 -----------------------------------------------------------------
