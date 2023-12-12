@@ -2,7 +2,6 @@ package clinicalstudyconnections.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,14 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import clinicalstudyconnections.model.ClinicalStudyData;
 import clinicalstudyconnections.model.DoctorData;
 import clinicalstudyconnections.model.OwnerData;
-import clinicalstudyconnections.model.PatientData;
 import clinicalstudyconnections.model.SiteData;
 import clinicalstudyconnections.service.ClinicalStudyConnectionService;
 import lombok.extern.slf4j.Slf4j;
