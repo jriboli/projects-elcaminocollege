@@ -26,5 +26,10 @@ INSERT INTO clinical_study (specialty_id, study_name, study_description, study_s
 INSERT INTO site_study (clinical_study_id, site_id) VALUES (1, 1)
 
 INSERT INTO patient (patient_first_name, patient_last_name, patient_age, patient_sex) VALUES ("Wade", "Wilson", 37, 1)
+INSERT INTO patient (patient_first_name, patient_last_name, patient_age, patient_sex) VALUES ("Twilight", "Sparkle", 5, 1)
+INSERT INTO patient (patient_first_name, patient_last_name, patient_age, patient_sex) VALUES ("Apple", "Jack", 10, 0)
+INSERT INTO patient (patient_first_name, patient_last_name, patient_age, patient_sex) VALUES ("Rainbox", "Dash", 9, 0)
+INSERT INTO patient (patient_first_name, patient_last_name, patient_age, patient_sex) VALUES ("Pinkie", "Pie", 7, 1)
 
 INSERT INTO study_patient (patient_id, study_id) VALUES (1, 1) 
+INSERT INTO study_patient (patient_id, study_id) VALUES (2, 1)

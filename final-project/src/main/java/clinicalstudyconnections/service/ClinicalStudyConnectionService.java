@@ -1,9 +1,11 @@
 package clinicalstudyconnections.service;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import clinicalstudyconnections.entity.Owner;
 import clinicalstudyconnections.entity.Patient;
 import clinicalstudyconnections.entity.Site;
 import clinicalstudyconnections.entity.Specialty;
+import clinicalstudyconnections.enums.StudyStatus;
 import clinicalstudyconnections.model.ClinicalStudyData;
 import clinicalstudyconnections.model.DoctorData;
 import clinicalstudyconnections.model.OwnerData;
@@ -84,6 +87,27 @@ public class ClinicalStudyConnectionService {
 		
 		ownerDbRepo.delete(owner);
 	}
+	
+
+
+	public List<ClinicalStudyData> GetStudiesForOwner(Long ownerId) {
+		List<ClinicalStudyData> results = new LinkedList<>();
+		
+		// First verify owner
+		Owner owner = findOrCreateOwner(ownerId);
+		
+		// Find owner sites
+		Set<Site> sites = owner.getSites();
+		
+		// Find studies assocaited with sites
+		Set<ClinicalStudy> studies = new HashSet<>();
+		sites.forEach(site -> studies.addAll(site.getClinicalStudies()) );
+		
+		
+		// return list of studies
+		studies.forEach(study -> results.add(new ClinicalStudyData(study)));
+		return results;
+	}
 
 	private Owner findOrCreateOwner(Long ownerId) {
 		Owner owner;
@@ -149,8 +173,18 @@ public class ClinicalStudyConnectionService {
 		return new SiteData(siteDbRepo.save(site));
 	}
 
-	public void deleteSite(Long ownerId, Long siteId) {
+	public int deleteSite(Long ownerId, Long siteId) {
 		Site site = findOrCreateSite(ownerId, siteId);
+		// Check if the SITE has any active Studies
+		Set<ClinicalStudy> studies = site.getClinicalStudies();
+		
+		boolean anyActiveStudy = studies.stream()
+		.anyMatch(study -> StudyStatus.IN_PROGRESS.equals(study.getStudyStatus()));
+		
+		if(anyActiveStudy) {
+			return -1;
+		}
+		
 		
 		// Remove Doctors
 		site.getDoctors().forEach(doctor -> deleteDoctorFromSite(ownerId, siteId, doctor.getDoctorId()));
@@ -158,26 +192,45 @@ public class ClinicalStudyConnectionService {
 		// Refresh Site - no longer have doctors
 		site = findOrCreateSite(ownerId, siteId);
 		
-		siteDbRepo.delete(site);		
+		siteDbRepo.delete(site);	
+		
+		return 0;
 	}
 
-	public void addDoctorToSite(Long ownerId, Long siteId, Long doctorId) {
+	public int addDoctorToSite(Long ownerId, Long siteId, Long doctorId) {
 		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		Site site = findOrCreateSite(ownerId, siteId);
+		
+		// Check doctor not already associated with Site
+		boolean isDoctorWithSite = site.getDoctors().stream().anyMatch(doc -> doctorId.equals(doc.getDoctorId()));
+		if(isDoctorWithSite) {
+			return -1;
+		}
 		
 		// Might need to Fix this - Or more so test it - DONE
 		site.enrollDoctor(doctor);
 		siteDbRepo.save(site);
+		
+		return 0;
 	}
 
-	public void deleteDoctorFromSite(Long ownerId, Long siteId, Long doctorId) {
+	public int deleteDoctorFromSite(Long ownerId, Long siteId, Long doctorId) {
 		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		Site site = findOrCreateSite(ownerId, siteId);
+		
+		// Check if last Doctor associated with Site, and prevent removal
+		boolean isLastDoctor = site.getDoctors().size() < 2;
+		
+		if(isLastDoctor) {
+			return -1;
+		}
 		
 		// Might need to Fix this - Or more so test it - DONE
 		//siteDbRepo.DeleteDoctor(site, doctor);
 		site.removeDoctor(doctor);
 		siteDbRepo.save(site);
+		
+		return 0;
 	}
 
 	private Site findOrCreateSite(Long ownerId, Long siteId) {
@@ -254,10 +307,19 @@ public class ClinicalStudyConnectionService {
 		return new DoctorData(doctorDbRepo.save(doctor));
 	}
 
-	public void deleteDoctor(Long ownerId, Long doctorId) {
+	public int deleteDoctor(Long ownerId, Long doctorId) {
 		Doctor doctor = findOrCreateDoctor(ownerId, doctorId);
 		
-		doctorDbRepo.delete(doctor);		
+		// Check if doctor associated with SITE, and block
+		boolean isAssociatedWithSite = Objects.nonNull(doctor.getSite());
+		
+		if(isAssociatedWithSite) {
+			return -1;
+		}
+		
+		doctorDbRepo.delete(doctor);	
+		
+		return 0;
 	}
 
 	private Doctor findOrCreateDoctor(Long ownerId, Long doctorId) {
@@ -346,7 +408,7 @@ public class ClinicalStudyConnectionService {
 		
 		// Removing Patients
 		if(!clinicalStudy.getPatients().isEmpty()) {
-			clinicalStudy.getPatients().forEach(patient -> removePatient(studyId, patient.getPatientId()));
+			clinicalStudy.getPatients().forEach(patient -> withdrawalPatient(studyId, patient.getPatientId()));
 		}
 		
 		// Removing Sites
@@ -390,7 +452,7 @@ public class ClinicalStudyConnectionService {
 		
 	}
 
-	public void removePatient(Long studyId, Long patientId) {
+	public void withdrawalPatient(Long studyId, Long patientId) {
 		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
 		//Patient patient = findOrCreatePatient(patientId);
 		Patient patient = clinicalStudy.getPatients().stream()

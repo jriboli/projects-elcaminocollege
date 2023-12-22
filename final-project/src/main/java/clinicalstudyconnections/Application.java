@@ -6,7 +6,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -20,12 +23,16 @@ import clinicalstudyconnections.model.SiteData;
 
 @SpringBootApplication
 public class Application {
-
+	private static String secretUser = "admin";
+	private static String secretPass = "admin";
+	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		
 		// Writing some code to call the API to simulate usage
 		Gson gson = new Gson();
+		
+		
 		
 		// ----------------------------------------------------------------------------------------
 		// Create a New Owner
@@ -36,7 +43,7 @@ public class Application {
 				+ "    \"companyName\" : \"Friendship Industries\"\r\n"
 				+ "}";
 		
-		String ownerUrl = "http://localhost:8080/clinical-study-connection/owner";
+		String ownersUrl = "http://localhost:8080/api/owners";
 		
 		//Map<String, String> headers = new HashMap<>();
 		//headers.put("Content-Type", "application/json");
@@ -61,7 +68,7 @@ public class Application {
 //		}
 //		System.out.println(createOwnerRes.body());
 		
-		String createOwnerResponse = HttpPOST(ownerUrl, ownerBody);		
+		String createOwnerResponse = HttpPOST(ownersUrl, ownerBody);		
 		OwnerData ownerObj = gson.fromJson(createOwnerResponse, OwnerData.class);
 		System.out.println("New Owner ID is : " + ownerObj.getOwnerId());
 		
@@ -77,9 +84,9 @@ public class Application {
 				+ "    \"sitePhone\" : \"8885554444\"\r\n"
 				+ "}";
 		
-		String siteUrl = "http://localhost:8080/clinical-study-connection/owner/"+ownerObj.getOwnerId()+"/site";
+		String sitesUrl = ownersUrl+"/"+ownerObj.getOwnerId()+"/sites";
 	
-		String createSiteResponse = HttpPOST(siteUrl, siteBody); 
+		String createSiteResponse = HttpPOST(sitesUrl, siteBody); 
 		SiteData siteObj = gson.fromJson(createSiteResponse, SiteData.class);	
 		System.out.println("New Site ID is : " + siteObj.getSiteId());
 		
@@ -91,9 +98,9 @@ public class Application {
 				+ "    \"doctorLastName\" : \"Gunn\"\r\n"
 				+ "}";
 		
-		String doctorUrl = "http://localhost:8080/clinical-study-connection/owner/"+ownerObj.getOwnerId()+"/doctor";
+		String doctorsUrl = ownersUrl+"/"+ownerObj.getOwnerId()+"/doctors";
 		
-		String createDoctorResponse = HttpPOST(doctorUrl, doctorBody);
+		String createDoctorResponse = HttpPOST(doctorsUrl, doctorBody);
 		DoctorData doctorObj = gson.fromJson(createDoctorResponse, DoctorData.class);
 		System.out.println("New Doctor ID is : " + doctorObj.getDoctorId());
 		
@@ -101,7 +108,7 @@ public class Application {
 		// Enroll Doctor to Site
 		// ----------------------------------------------------------------------------------------
 		String enrollDoctor = "";
-		String enrollDoctorUrl = "http://localhost:8080/clinical-study-connection/owner/"+ownerObj.getOwnerId()+"/site/"+siteObj.getSiteId()+"/doctor/"+doctorObj.getDoctorId();
+		String enrollDoctorUrl = ownersUrl+"/"+ownerObj.getOwnerId()+"/sites/"+siteObj.getSiteId()+"/doctors/"+doctorObj.getDoctorId();
 		
 		String enrollDoctorResponse = HttpPOST(enrollDoctorUrl, enrollDoctor);
 		System.out.println(enrollDoctorResponse);
@@ -111,9 +118,9 @@ public class Application {
 		// Find Study
 		// ----------------------------------------------------------------------------------------
 		String studyBody = "";
-		String studyUrl = "http://localhost:8080/clinical-study-connection/study/4";
+		String studiesUrl = "http://localhost:8080/api/studies/4";
 		
-		String studyResponse = HttpGET(studyUrl);
+		String studyResponse = HttpGET(studiesUrl);
 		ClinicalStudyData studyObj = gson.fromJson(studyResponse, ClinicalStudyData.class);
 		System.out.println("Found Study ID is : " + studyObj.getClinicalStudyId());
 		
@@ -121,7 +128,7 @@ public class Application {
 		// Apply to Study
 		// ----------------------------------------------------------------------------------------
 		String enrollSite4StudyBody = "";
-		String enrollSite4StudyUrl = "http://localhost:8080/clinical-study-connection/study/"+studyObj.getClinicalStudyId()+"/site/"+siteObj.getSiteId();
+		String enrollSite4StudyUrl = "http://localhost:8080/api/studies/"+studyObj.getClinicalStudyId()+"/sites/"+siteObj.getSiteId();
 		
 		String enrollSiteResponse = HttpPOST(enrollSite4StudyUrl, enrollSite4StudyBody);
 		System.out.println(enrollSiteResponse);
@@ -137,7 +144,7 @@ public class Application {
 				+ "    \"patientSex\" : \"MALE\"\r\n"
 				+ "}";
 		
-		String patientUrl = "http://localhost:8080/clinical-study-connection/patient";
+		String patientUrl = "http://localhost:8080/api/patients";
 		
 		String createPatientResponse = HttpPOST(patientUrl, patientBody);
 		PatientData patientObj = gson.fromJson(createPatientResponse, PatientData.class);
@@ -147,7 +154,7 @@ public class Application {
 		// Enroll Patient for Study
 		// ----------------------------------------------------------------------------------------
 		String enrollPatient4StudyBody = "";
-		String enrollPatient4StudyUrl = "http://localhost:8080/clinical-study-connection/study/"+studyObj.getClinicalStudyId()+"/patient/"+patientObj.getPatientId();
+		String enrollPatient4StudyUrl = "http://localhost:8080/api/studies/"+studyObj.getClinicalStudyId()+"/patients/"+patientObj.getPatientId();
 		
 		String enrollPatientResponse = HttpPOST(enrollPatient4StudyUrl, enrollPatient4StudyBody);
 		System.out.println(enrollPatientResponse);
@@ -156,10 +163,15 @@ public class Application {
 	}
 	
 	public static String HttpPOST(String url, String body) {
+		// Create the credentials string for Basic Authentication
+        String credentials = secretUser + ":" + secretPass;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.POST(BodyPublishers.ofString(body))
 				.header("Content-Type", "application/json" )
+				.header("Authorization", "Basic " + encodedCredentials)
 				.build();
 		HttpResponse<String> response = null;
 		
@@ -175,9 +187,14 @@ public class Application {
 	}
 	
 	public static String HttpGET(String url) {
+		// Create the credentials string for Basic Authentication
+		String credentials = secretUser + ":" + secretPass;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(url))
 				.method("GET", HttpRequest.BodyPublishers.noBody())
+				.header("Authorization", "Basic " + encodedCredentials)
 				.build();
 		HttpResponse<String> response = null;
 		try {

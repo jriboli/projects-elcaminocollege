@@ -11,6 +11,10 @@ public class Week04Quiz {
 		System.out.println(power(3,4));
 		quizQuestion3();
 		
+		
+		// Testing
+		System.out.println(repeatWord("Java", 5));
+		
 		//Question 5: 
 		List<String> listOfNames = new ArrayList<>();
 		listOfNames.add("Rocket Raccoon");
@@ -33,6 +37,10 @@ public class Week04Quiz {
 		List<String> wordsWithA = returnValuesForKeysStartingWithA(dictionary);
 		System.out.println(wordsWithA);
 		
+	}
+	
+	public static String repeatWord(String userWord, int numTimes) {
+		return userWord.repeat(numTimes);
 	}
 	
 	public static int power(int base, int exponent) {

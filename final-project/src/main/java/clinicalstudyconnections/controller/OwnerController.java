@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import clinicalstudyconnections.model.ClinicalStudyData;
 import clinicalstudyconnections.model.DoctorData;
 import clinicalstudyconnections.model.OwnerData;
 import clinicalstudyconnections.model.SiteData;
@@ -21,7 +22,7 @@ import clinicalstudyconnections.service.ClinicalStudyConnectionService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/clinical-study-connection")
+@RequestMapping("/api")
 @Slf4j
 public class OwnerController {
 	
@@ -35,26 +36,26 @@ public class OwnerController {
 	 * ---- OWNER --------------------------------------------------------------------
 	 */
 
-	@GetMapping("/owner")
+	@GetMapping("/owners")
 	public List<OwnerData> getAllOwners() {
 		log.info("Grabbing all owners");
 		return service.getAllOwners();		
 	}
 	
-	@GetMapping("/owner/{ownerId}")
+	@GetMapping("/owners/{ownerId}")
 	public OwnerData getOwnerById(@PathVariable Long ownerId) {
 		log.info("Find owner with ID={}", ownerId);
 		return service.getOwner(ownerId);
 	}
 	
-	@PostMapping("/owner")
+	@PostMapping("/owners")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public OwnerData createOwner(@RequestBody OwnerData ownerData) {
 		log.info("Create owner {}", ownerData);
 		return service.saveOwner(ownerData);
 	}
 
-	@PutMapping("/owner/{ownerId}")
+	@PutMapping("/owners/{ownerId}")
 	public OwnerData updateOwner(@PathVariable Long ownerId, @RequestBody OwnerData ownerData) {
 		ownerData.setOwnerId(ownerId);
 		log.info("Update owner {}", ownerData);
@@ -63,7 +64,7 @@ public class OwnerController {
 	
 	// We have this just to show an Error - Not Allowed
 	// Return HTTP Code 405 
-	@DeleteMapping("/owner")
+	@DeleteMapping("/owners")
 	// Not Needed - handled in GlobalError class
 	//@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
 	public Map<String, String> deleteAllOwners() {
@@ -71,18 +72,23 @@ public class OwnerController {
 		throw new UnsupportedOperationException("Deleting all contributors is not allowed.");
 	}
 	
-	@DeleteMapping("/owner/{ownerId}")
+	@DeleteMapping("/owners/{ownerId}")
 	public Map<String, String> deleteOwnerById(@PathVariable Long ownerId) {
 		log.info("Delete owner with ID={}", ownerId);
 		service.deleteOwner(ownerId);
 		return Map.of("message", String.format("Deleting Owner with ID=%s was successful", ownerId));
 	}
 	
+	@GetMapping("/owners/{ownerId}/studies")
+	public List<ClinicalStudyData> getStudiesHandledByOwnerSites(@PathVariable Long ownerId){
+		log.info("Finding studies for sites associated with Owner");
+		return service.GetStudiesForOwner(ownerId);
+	}
 	/*
 	 * ---- SITE --------------------------------------------------------------------
 	 */
 	
-	@GetMapping("/owner/{ownerId}/site")
+	@GetMapping("/owners/{ownerId}/sites")
 	public List<SiteData> getAllSitesForOwner(@PathVariable Long ownerId) {
 		log.info("Grabbing all sites for Owner ID={}", ownerId);
 		// NICE TO HAVE 
@@ -90,13 +96,13 @@ public class OwnerController {
 		return service.getAllSites(ownerId);
 	}
 	
-	@GetMapping("/owner/{ownerId}/site/{siteId}")
+	@GetMapping("/owners/{ownerId}/site/{siteId}")
 	public SiteData getSiteById(@PathVariable Long ownerId, @PathVariable Long siteId) {
 		log.info("Find Site with ID={} for Owner with ID={}", siteId, ownerId);
 		return service.getSiteById(ownerId, siteId);
 	}
 	
-	@PostMapping("/owner/{ownerId}/site")
+	@PostMapping("/owners/{ownerId}/sites")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public SiteData createSite(@PathVariable Long ownerId, @RequestBody SiteData siteData) {
 		log.info("Create Site {}", siteData);
@@ -106,7 +112,7 @@ public class OwnerController {
 		return service.saveSite(ownerId, siteData);
 	}
 	
-	@PutMapping("/owner/{ownerId}/site/{siteId}")
+	@PutMapping("/owners/{ownerId}/sites/{siteId}")
 	public SiteData updateSite(@PathVariable Long ownerId, @PathVariable Long siteId, @RequestBody SiteData siteData) {
 		siteData.setSiteId(siteId);
 		log.info("Update Site {}", siteData); 
@@ -116,49 +122,59 @@ public class OwnerController {
 		return service.saveSite(ownerId, siteData);
 	}
 	
-	@DeleteMapping("/owner/{ownerId}/site/{siteId}")
+	@DeleteMapping("/owners/{ownerId}/sites/{siteId}")
 	public Map<String, String> deleteSite(@PathVariable Long ownerId, @PathVariable Long siteId) {
 		log.info("Delete Site with ID={}", siteId);
-		service.deleteSite(ownerId, siteId);
+		int deleteResult = service.deleteSite(ownerId, siteId);
 		// SAME AS ABOVE - DONE
 		// Fix - Was fixed with above fix for createSite();
-		return Map.of("message", String.format("Deleting Site with ID=%s was successful", siteId));
+		if(deleteResult == 0)
+			return Map.of("message", String.format("Deleting Site with ID=%s was successful", siteId));
+		else 
+			return Map.of("message", String.format("Deleting Site with ID=%s failed, check if Site has active studies.", siteId));
 	}
 	
 	// Adding Doctor to Site
-	@PostMapping("/owner/{ownerId}/site/{siteId}/doctor/{doctorId}")
+	@PostMapping("/owners/{ownerId}/sites/{siteId}/doctors/{doctorId}")
 	public Map<String, String> addDoctorToSite(@PathVariable Long ownerId, @PathVariable Long siteId, @PathVariable Long doctorId) {
 		log.info("Adding Doctor with ID={} to Site with ID={}", doctorId, siteId);
-		service.addDoctorToSite(ownerId, siteId, doctorId);
+		int doctorResult = service.addDoctorToSite(ownerId, siteId, doctorId);
 		
-		return Map.of("message", "Added Doctor to Site successfully.");
+		if(doctorResult == 0)
+			return Map.of("message", "Added Doctor to Site successfully.");
+		else
+			return Map.of("message", "Failed to add Doctor to Site, check if Doctor already associated with Site.");
+		
 	}
 	
-	@DeleteMapping("/owner/{ownerId}/site/{siteId}/doctor/{doctorId}")
+	@DeleteMapping("/owners/{ownerId}/sites/{siteId}/doctors/{doctorId}")
 	public Map<String, String> deleteDoctorFromSite(@PathVariable Long ownerId, @PathVariable Long siteId, @PathVariable Long doctorId) {
 		log.info("Deleting Doctor with ID={} to Site with ID={}", doctorId, siteId);
-		service.deleteDoctorFromSite(ownerId, siteId, doctorId);
+		int doctorResult = service.deleteDoctorFromSite(ownerId, siteId, doctorId);
 		
-		return Map.of("message", "Removed Doctor from Site successfully.");
+		if(doctorResult == 0)
+			return Map.of("message", "Removed Doctor from Site successfully.");
+		else
+			return Map.of("message", "Failed to remove Doctor from Site, please confirm at least one Doctor associated with Site.");
 	}
 	
 	/*
 	 * ---- DOCTOR --------------------------------------------------------------------
 	 */
 	
-	@GetMapping("/owner/{ownerId}/doctor")
+	@GetMapping("/owners/{ownerId}/doctors")
 	public List<DoctorData> getAllDoctors(@PathVariable Long ownerId) {
 		log.info("Grabbing all Doctors for Owner with ID={}", ownerId);
 		return service.getAllDoctors(ownerId);
 	}
 	
-	@GetMapping("/owner/{ownerId}/doctor/{doctorId}")
+	@GetMapping("/owners/{ownerId}/doctors/{doctorId}")
 	public DoctorData getDoctorById(@PathVariable Long ownerId, @PathVariable Long doctorId) {
 		log.info("Grab Doctor with ID={}", doctorId);
 		return service.getDoctorById(ownerId, doctorId);
 	}
 	
-	@PostMapping("/owner/{ownerId}/doctor")
+	@PostMapping("/owners/{ownerId}/doctors")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public DoctorData createDoctor(@PathVariable Long ownerId, @RequestBody DoctorData doctorData) {
 		log.info("Create Doctor {}", doctorData);
@@ -168,20 +184,23 @@ public class OwnerController {
 		return service.saveDoctor(ownerId, doctorData);
 	}
 	
-	@PutMapping("/owner/{ownerId}/doctor/{doctorId}")
+	@PutMapping("/owners/{ownerId}/doctors/{doctorId}")
 	public DoctorData updateDoctor(@PathVariable Long ownerId, @PathVariable Long doctorId, @RequestBody DoctorData doctorData) {
 		doctorData.setDoctorId(doctorId);
 		log.info("Update Doctor {}", doctorData);
 		return service.saveDoctor(ownerId, doctorData);
 	}
 	
-	@DeleteMapping("/owner/{ownerId}/doctor/{doctorId}")
+	@DeleteMapping("/owners/{ownerId}/doctors/{doctorId}")
 	public Map<String, String> deleteDoctor(@PathVariable Long ownerId, @PathVariable Long doctorId) {
 		log.info("Delete Doctor with ID={}", doctorId);
-		service.deleteDoctor(ownerId, doctorId);
+		int doctorResult = service.deleteDoctor(ownerId, doctorId);
 		// NEED TO FIX - DONE
 		// SHOULD HAVE FAILED WITH INVALID ID, GOT MESSAGE - "Deleting Doctor with ID=2 was successful"
 		// Fix - Not a real issue, User Error
-		return Map.of("message", String.format("Deleting Doctor with ID=%s was successful", doctorId));
+		if(doctorResult == 0)
+			return Map.of("message", String.format("Deleting Doctor with ID=%s was successful", doctorId));
+		else
+			return Map.of("message", String.format("Deleting Doctor with ID=%s blocked, if Doctor associated with SITE, please remove SITE first.", doctorId));
 	}
 }

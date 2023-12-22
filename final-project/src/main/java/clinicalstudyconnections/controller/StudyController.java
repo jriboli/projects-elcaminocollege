@@ -3,6 +3,7 @@ package clinicalstudyconnections.controller;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +22,7 @@ import clinicalstudyconnections.service.ClinicalStudyConnectionService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/clinical-study-connection")
+@RequestMapping("/api")
 @Slf4j
 public class StudyController {
 	private ClinicalStudyConnectionService service;
@@ -29,29 +30,34 @@ public class StudyController {
 	public StudyController(ClinicalStudyConnectionService service) {
 		this.service = service;
 	}
+	
 	/*
 	 * ---- CLINICAL STUDY --------------------------------------------------------------------
 	 */
 	
 	// Adding a filter parameter when searching all Studies
-	@GetMapping("/study")
-	public List<ClinicalStudyData> getAllStudies(@RequestParam String specialty) {
+	@GetMapping("/studies")
+	public List<ClinicalStudyData> getAllStudies(@RequestParam(required = false) Optional<String> specialty) {
 		log.info("Grabbing all Studies");
-		if(Objects.isNull(specialty)) {
-			return service.getAllStudies();
+		
+		//The parameter is wrapped in an Optional to handle the absence of the parameter more elegantly.
+		// specialty.isPresent(): Checks if the specialty parameter is present.
+		if(specialty.isPresent()) {
+			// specialty.get(): Retrieves the value of the specialty parameter if it is present.
+			return service.getStudiesBySpecialty(specialty.get());
 		}
 		else {
-			return service.getStudiesBySpecialty(specialty);
+			return service.getAllStudies();
 		}
 	}
 	
-	@GetMapping("/study/{studyId}")
+	@GetMapping("/studies/{studyId}")
 	public ClinicalStudyData getStudyById(@PathVariable Long studyId) {
 		log.info("Grab Clinical Study with ID={}", studyId);
 		return service.getStudyById(studyId);
 	}
 	
-	@PostMapping("/study")
+	@PostMapping("/studies")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public ClinicalStudyData createStudy(@RequestBody ClinicalStudyData clinicalStudyData) {
 		log.info("Create Clinical Study {}", clinicalStudyData);
@@ -61,14 +67,14 @@ public class StudyController {
 		return service.saveStudy(clinicalStudyData);
 	}
 	
-	@PutMapping("/study/{studyId}")
+	@PutMapping("/studies/{studyId}")
 	public ClinicalStudyData updateStudy(@PathVariable Long studyId, @RequestBody ClinicalStudyData clinicalStudyData) {
 		clinicalStudyData.setClinicalStudyId(studyId);
 		log.info("Update Clinical Study {}", clinicalStudyData);
 		return service.saveStudy(clinicalStudyData);
 	}
 	
-	@DeleteMapping("/study/{studyId}")
+	@DeleteMapping("/studies/{studyId}")
 	public Map<String, String> deleteStudy(@PathVariable Long studyId) {
 		log.info("Delete Clincial Study with ID={}", studyId);
 		// We need to do more than just DELETE... 
@@ -78,8 +84,8 @@ public class StudyController {
 	}
 	
 	// Adding Site to Study
-	@PostMapping("/study/{studyId}/site/{siteId}")
-	public Map<String, String> enrollSite(@PathVariable Long studyId, @PathVariable Long siteId) {
+	@PostMapping("/studies/{studyId}/sites/{siteId}")
+	public Map<String, String> associateSite(@PathVariable Long studyId, @PathVariable Long siteId) {
 		log.info("Adding Site with ID={} to Study with ID={}", studyId, siteId);
 		// NEED TO FIX - DONE
 		// INFINITE LOOP
@@ -90,15 +96,15 @@ public class StudyController {
 		return Map.of("message", "Site was successfully associated with Site");
 	}
 	
-	@DeleteMapping("/study/{studyId}/site/{siteId}")
-	public Map<String, String> removeSite(@PathVariable Long studyId, @PathVariable Long siteId) {
+	@DeleteMapping("/studies/{studyId}/sites/{siteId}")
+	public Map<String, String> deassociateSite(@PathVariable Long studyId, @PathVariable Long siteId) {
 		log.info("Deleting Site with ID={} to Study with ID={}", studyId, siteId);
 		service.removeSite(studyId, siteId);
 		
 		return Map.of("message", "Site was successfully removed from Site");
 	}
 	
-	@PostMapping("/study/{studyId}/patient/{patientId}")
+	@PostMapping("/studies/{studyId}/patients/{patientId}")
 	public Map<String, String> enrollPatient(@PathVariable Long studyId, @PathVariable Long patientId) {
 		log.info("Adding Patient with ID={} to Study with ID={}", studyId, patientId);
 		service.enrollPatient(studyId, patientId);
@@ -106,10 +112,10 @@ public class StudyController {
 		return Map.of("message", "Patient was successfully enrolled with Site");
 	}
 	
-	@DeleteMapping("/study/{studyId}/patient/{patientId}")
-	public Map<String, String> removePatient(@PathVariable Long studyId, @PathVariable Long patientId) {
+	@DeleteMapping("/studies/{studyId}/patients/{patientId}")
+	public Map<String, String> withdrawalPatient(@PathVariable Long studyId, @PathVariable Long patientId) {
 		log.info("Deleting Patient with ID={} to Study with ID={}", studyId, patientId);
-		service.removePatient(studyId, patientId);
+		service.withdrawalPatient(studyId, patientId);
 		
 		return Map.of("message", "Site was successfully removed from Site");
 	}

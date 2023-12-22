@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import clinicalstudyconnections.entity.ClinicalStudy;
 import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Owner;
 import clinicalstudyconnections.entity.Site;
@@ -31,6 +32,8 @@ public class SiteData {
 	@JsonIgnore
 	private Set<Specialty> specialties = new HashSet<>();
 	private Set<SpecialtyResponse> specialtiesResponse = new HashSet<>();
+	@JsonIgnore
+	private Set<ClinicalStudy> studies = new HashSet<>();
 	
 	public SiteData(Site site) {
 		siteId = site.getSiteId();
@@ -49,6 +52,8 @@ public class SiteData {
 		
 		specialties = site.getSpecialties();
 		site.getSpecialties().forEach(specialty -> specialtiesResponse.add(new SpecialtyResponse(specialty)));
+		
+		studies = site.getClinicalStudies();
 	}
 	
 	@Data

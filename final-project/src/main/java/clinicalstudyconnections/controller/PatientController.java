@@ -19,7 +19,7 @@ import clinicalstudyconnections.service.ClinicalStudyConnectionService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/clinical-study-connection")
+@RequestMapping("/api")
 @Slf4j
 public class PatientController {
 	
@@ -33,33 +33,33 @@ public class PatientController {
 	 * ---- PATIENT --------------------------------------------------------------------
 	 */
 	
-	@GetMapping("/patient")
+	@GetMapping("/patients")
 	public List<PatientData> getAllPatients() {
 		log.info("Grabbing all Patients");
 		return service.getAllPatients();
 	}
 	
-	@GetMapping("/patient/{patientId}")
+	@GetMapping("/patients/{patientId}")
 	public PatientData getPatientById(@PathVariable Long patientId) {
-		log.info("Grab Clinical Study with ID={}", patientId);
+		log.info("Grab Patient with ID={}", patientId);
 		return service.getPatientById(patientId);		
 	}
 	
-	@PostMapping("/patient")
+	@PostMapping("/patients")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public PatientData createPatient(@RequestBody PatientData patientData) {
 		log.info("Create Patient {}", patientData);
 		return service.savePatient(patientData);
 	}
 	
-	@PutMapping("/patient/{patientId}")
+	@PutMapping("/patients/{patientId}")
 	public PatientData updatePatient(@PathVariable Long patientId, @RequestBody PatientData patientData) {
 		patientData.setPatientId(patientId);
-		log.info("Update Clinical Study {}", patientData);
+		log.info("Update Patient {}", patientData);
 		return service.savePatient(patientData);
 	}
 	
-	@DeleteMapping("/patient/{patientId}")
+	@DeleteMapping("/patients/{patientId}")
 	public Map<String, String> deletePatient(@PathVariable Long patientId) {
 		log.info("Delete Patient with ID={}", patientId);
 		service.deletePatient(patientId);
