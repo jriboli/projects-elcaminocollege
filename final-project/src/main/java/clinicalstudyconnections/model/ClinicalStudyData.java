@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ClinicalStudyData {
+public class ClinicalStudyData extends Model {
 	private Long clinicalStudyId;
 	private String studyName;
 	private String studyDescription;
@@ -50,6 +50,7 @@ public class ClinicalStudyData {
 			clinicalStudy.getPatients().forEach(patient -> patientsResponse.add(new PatientResponse(patient)));
 		}		
 	}
+	
 	
 	@Data
 	@NoArgsConstructor

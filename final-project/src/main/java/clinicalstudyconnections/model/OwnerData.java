@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class OwnerData {
+public class OwnerData extends Model{
 	private Long ownerId;
 	private String ownerFirstName;
 	private String ownerLastName;
@@ -43,6 +43,9 @@ public class OwnerData {
 		}
 	}
 	
+	public boolean isValid() {
+		return (this.companyName != null) && (!this.getCompanyName().isEmpty());
+	}
 	// This should help with the Infinite Recursion error 
 	@Data
 	@NoArgsConstructor

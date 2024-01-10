@@ -65,6 +65,11 @@ public class ClinicalStudyConnectionService {
 		
 		owners.forEach(owner -> ownersResponse.add(new OwnerData(owner)));
 		
+		// Try using a Stream
+		// return owners.stream().map(o -> {
+		//
+		// }),toList();
+		
 		return ownersResponse;
 	}
 

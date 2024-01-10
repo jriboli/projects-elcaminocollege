@@ -19,11 +19,14 @@ import clinicalstudyconnections.model.DoctorData;
 import clinicalstudyconnections.model.OwnerData;
 import clinicalstudyconnections.model.SiteData;
 import clinicalstudyconnections.service.ClinicalStudyConnectionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
+// Annotation for Swagger
+@Tag(name = "Owners", description = "Operations on Owners.")
 public class OwnerController {
 	
 	private ClinicalStudyConnectionService service;
@@ -51,7 +54,11 @@ public class OwnerController {
 	@PostMapping("/owners")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public OwnerData createOwner(@RequestBody OwnerData ownerData) {
-		log.info("Create owner {}", ownerData);
+		log.info("Create owner {}", ownerData.toJson());
+		
+		if(ownerData.isValid()) {
+			// Throw something
+		}
 		return service.saveOwner(ownerData);
 	}
 
