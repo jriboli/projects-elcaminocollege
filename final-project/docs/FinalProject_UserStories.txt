@@ -101,7 +101,10 @@ As a user I want to get a list of available Studies
 GET /studies
 
 AS a user I want to filter a list of Studies by specialty
-GET /studies?filter="specialty"
+GET /studies?specialty="TBD"
+
+AS a user I want to filter a list of Studies by status
+GET /studies?status="TBD"
 
 As a user I want to get details on a specific Study
 GET /studies/{study_id}

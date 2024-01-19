@@ -3,7 +3,9 @@ package clinicalstudyconnections.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,14 +54,22 @@ public class OwnerController {
 	}
 	
 	@PostMapping("/owners")
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public OwnerData createOwner(@RequestBody OwnerData ownerData) {
+	//@ResponseStatus(code = HttpStatus.CREATED)
+	// Trying something new called ResponseEntity
+	// https://www.baeldung.com/spring-response-entity
+	public ResponseEntity<String> createOwner(@RequestBody OwnerData ownerData) {
+		// Cool function to have base Model support toJson
 		log.info("Create owner {}", ownerData.toJson());
 		
-		if(ownerData.isValid()) {
-			// Throw something
+		// Headers
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		
+		// Added func in Data to check if is valid before proceeding
+		if(!ownerData.isValid()) {
+			return new ResponseEntity<>("Invalid Owner Data provided. Please review and try again.", headers, HttpStatus.BAD_REQUEST);
 		}
-		return service.saveOwner(ownerData);
+		return new ResponseEntity<>(service.saveOwner(ownerData).toJson(), headers, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/owners/{ownerId}")

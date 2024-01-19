@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import clinicalstudyconnections.controller.StudyController;
 import clinicalstudyconnections.entity.ClinicalStudy;
 import clinicalstudyconnections.entity.Doctor;
 import clinicalstudyconnections.entity.Owner;
@@ -28,8 +29,10 @@ import clinicalstudyconnections.repository.PatientDBRepository;
 import clinicalstudyconnections.repository.SiteDBRepository;
 import clinicalstudyconnections.repository.SpecialtyDBRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ClinicalStudyConnectionService {
 
 	// TESTING OUT SOME DEPENDENCY INJECTION 
@@ -63,14 +66,17 @@ public class ClinicalStudyConnectionService {
 		List<Owner> owners = ownerDbRepo.findAll();
 		List<OwnerData> ownersResponse = new LinkedList<>();
 		
-		owners.forEach(owner -> ownersResponse.add(new OwnerData(owner)));
+		//owners.forEach(owner -> ownersResponse.add(new OwnerData(owner)));
 		
 		// Try using a Stream
-		// return owners.stream().map(o -> {
-		//
-		// }),toList();
+		// https://www.baeldung.com/java-use-remove-item-stream
+		// https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#method.summary
+		// https://howtodoinjava.com/java8/stream-map-example/
+		return owners.stream()
+				.map(o -> new OwnerData(o))
+				.toList();
 		
-		return ownersResponse;
+		//return ownersResponse;
 	}
 
 	public OwnerData getOwner(Long ownerId) {
@@ -92,8 +98,6 @@ public class ClinicalStudyConnectionService {
 		
 		ownerDbRepo.delete(owner);
 	}
-	
-
 
 	public List<ClinicalStudyData> GetStudiesForOwner(Long ownerId) {
 		List<ClinicalStudyData> results = new LinkedList<>();
@@ -188,8 +192,7 @@ public class ClinicalStudyConnectionService {
 		
 		if(anyActiveStudy) {
 			return -1;
-		}
-		
+		}		
 		
 		// Remove Doctors
 		site.getDoctors().forEach(doctor -> deleteDoctorFromSite(ownerId, siteId, doctor.getDoctorId()));
@@ -390,6 +393,40 @@ public class ClinicalStudyConnectionService {
 		studies.forEach(study -> studiesResponse.add(new ClinicalStudyData(study)));
 		return studiesResponse;
 	}
+	
+	public List<ClinicalStudyData> getStudiesBySpecialtyAndStatus(String specialty, String status) {
+		List<ClinicalStudyData> results = getStudiesByStatus(status);
+		
+		log.info("Mid processing results: " + results);
+		log.info("Searching for: -" + specialty.toUpperCase() + "-");
+		
+		results.forEach(r -> log.info("Result: -" + r.getSpecialty().getSpecialtyName().toUpperCase() + "-"));
+		
+		// Filter the list of Studies by Status with Specialty
+		return results.stream()
+				// Why did .equals verse ++ work in matching ??? 
+				.filter(r -> r.getSpecialty().getSpecialtyName().equals(specialty))
+				.toList();
+				
+	}
+
+	public List<ClinicalStudyData> getStudiesByStatus(String status) {
+		// Check Status is valid
+		try {
+			StudyStatus enumValue = StudyStatus.valueOf(status.toUpperCase());
+			
+			// Filter on the DB side with a hand written query
+			List<ClinicalStudy> studies = clinicalDbRepo.findByStatus(enumValue.getValue());
+			
+			return studies.stream()
+					.map(s -> new ClinicalStudyData(s))
+					.toList();
+			
+		} catch (Exception ex) {
+			log.info("Error match StudyStatus ENUM - " + ex.getMessage());
+			return null;
+		}		
+	}
 
 	public ClinicalStudyData getStudyById(Long studyId) {
 		ClinicalStudy clinicalStudy = findOrCreateStudy(studyId);
@@ -559,5 +596,4 @@ public class ClinicalStudyConnectionService {
 		// Studies	
 		patient.setClinicalStudies(patientData.getClincialStudies());
 	}
-
 }

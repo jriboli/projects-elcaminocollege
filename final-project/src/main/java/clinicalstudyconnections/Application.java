@@ -25,15 +25,13 @@ import clinicalstudyconnections.model.SiteData;
 public class Application {
 	private static String secretUser = "admin";
 	private static String secretPass = "admin";
+	private static String port = "9000";
 	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		
 		// Writing some code to call the API to simulate usage
 		Gson gson = new Gson();
-		
-		
-		
 		// ----------------------------------------------------------------------------------------
 		// Create a New Owner
 		// ----------------------------------------------------------------------------------------
@@ -43,7 +41,7 @@ public class Application {
 				+ "    \"companyName\" : \"Friendship Industries\"\r\n"
 				+ "}";
 		
-		String ownersUrl = "http://localhost:8080/api/owners";
+		String ownersUrl = "http://localhost:"+port+"/api/owners";
 		
 		//Map<String, String> headers = new HashMap<>();
 		//headers.put("Content-Type", "application/json");
@@ -118,7 +116,7 @@ public class Application {
 		// Find Study
 		// ----------------------------------------------------------------------------------------
 		String studyBody = "";
-		String studiesUrl = "http://localhost:8080/api/studies/4";
+		String studiesUrl = "http://localhost:"+port+"/api/studies/4";
 		
 		String studyResponse = HttpGET(studiesUrl);
 		ClinicalStudyData studyObj = gson.fromJson(studyResponse, ClinicalStudyData.class);
@@ -128,7 +126,7 @@ public class Application {
 		// Apply to Study
 		// ----------------------------------------------------------------------------------------
 		String enrollSite4StudyBody = "";
-		String enrollSite4StudyUrl = "http://localhost:8080/api/studies/"+studyObj.getClinicalStudyId()+"/sites/"+siteObj.getSiteId();
+		String enrollSite4StudyUrl = "http://localhost:"+port+"/api/studies/"+studyObj.getClinicalStudyId()+"/sites/"+siteObj.getSiteId();
 		
 		String enrollSiteResponse = HttpPOST(enrollSite4StudyUrl, enrollSite4StudyBody);
 		System.out.println(enrollSiteResponse);
@@ -144,7 +142,7 @@ public class Application {
 				+ "    \"patientSex\" : \"MALE\"\r\n"
 				+ "}";
 		
-		String patientUrl = "http://localhost:8080/api/patients";
+		String patientUrl = "http://localhost:"+port+"/api/patients";
 		
 		String createPatientResponse = HttpPOST(patientUrl, patientBody);
 		PatientData patientObj = gson.fromJson(createPatientResponse, PatientData.class);
@@ -154,7 +152,7 @@ public class Application {
 		// Enroll Patient for Study
 		// ----------------------------------------------------------------------------------------
 		String enrollPatient4StudyBody = "";
-		String enrollPatient4StudyUrl = "http://localhost:8080/api/studies/"+studyObj.getClinicalStudyId()+"/patients/"+patientObj.getPatientId();
+		String enrollPatient4StudyUrl = "http://localhost:"+port+"/api/studies/"+studyObj.getClinicalStudyId()+"/patients/"+patientObj.getPatientId();
 		
 		String enrollPatientResponse = HttpPOST(enrollPatient4StudyUrl, enrollPatient4StudyBody);
 		System.out.println(enrollPatientResponse);

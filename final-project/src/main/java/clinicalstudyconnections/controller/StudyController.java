@@ -37,14 +37,21 @@ public class StudyController {
 	
 	// Adding a filter parameter when searching all Studies
 	@GetMapping("/studies")
-	public List<ClinicalStudyData> getAllStudies(@RequestParam(required = false) Optional<String> specialty) {
+	public List<ClinicalStudyData> getAllStudies(@RequestParam(required = false) Optional<String> specialty, 
+			@RequestParam(required = false) Optional<String> status) {
 		log.info("Grabbing all Studies");
 		
 		//The parameter is wrapped in an Optional to handle the absence of the parameter more elegantly.
 		// specialty.isPresent(): Checks if the specialty parameter is present.
-		if(specialty.isPresent()) {
+		if(specialty.isPresent() && status.isEmpty()) {
 			// specialty.get(): Retrieves the value of the specialty parameter if it is present.
 			return service.getStudiesBySpecialty(specialty.get());
+		}
+		else if(specialty.isPresent() && status.isPresent()) {
+			return service.getStudiesBySpecialtyAndStatus(specialty.get(), status.get());
+		}
+		else if(specialty.isEmpty() && status.isPresent()) {
+			return service.getStudiesByStatus(status.get());
 		}
 		else {
 			return service.getAllStudies();
